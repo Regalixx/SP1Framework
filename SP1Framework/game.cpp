@@ -17,7 +17,7 @@ SGameChar   g_sChar;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
 
 // Console object
-Console g_Console(80, 25, "SP1 Framework");
+Console g_Console(80, 25, "testest");//setconsolesize
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -147,8 +147,8 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     EKEYS key = K_COUNT;
     switch (keyboardEvent.wVirtualKeyCode)
     {
-    case VK_UP: key = K_UP; break;
-    case VK_DOWN: key = K_DOWN; break;
+    //case VK_UP: key = K_UP; break;
+    //case VK_DOWN: key = K_DOWN; break;
     case VK_LEFT: key = K_LEFT; break; 
     case VK_RIGHT: key = K_RIGHT; break; 
     case VK_SPACE: key = K_SPACE; break;
@@ -233,26 +233,27 @@ void moveCharacter()
     // providing a beep sound whenver we shift the character
     if (g_skKeyEvent[K_UP].keyReleased && g_sChar.m_cLocation.Y > 0)
     {
-        //Beep(1440, 30);
+        Beep(1440, 30);
         g_sChar.m_cLocation.Y--;       
     }
-    if (g_skKeyEvent[K_LEFT].keyReleased && g_sChar.m_cLocation.X > 0)
+    if (g_skKeyEvent[K_LEFT].keyReleased && g_sChar.m_cLocation.X > 30)
     {
-        //Beep(1440, 30);
+        Beep(1440, 30);
         g_sChar.m_cLocation.X--;        
     }
     if (g_skKeyEvent[K_DOWN].keyReleased && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
     {
-        //Beep(1440, 30);
+        Beep(1440, 30);
         g_sChar.m_cLocation.Y++;        
     }
-    if (g_skKeyEvent[K_RIGHT].keyReleased && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+    if (g_skKeyEvent[K_RIGHT].keyReleased && g_sChar.m_cLocation.X < 47)
     {
-        //Beep(1440, 30);
+        Beep(1440, 30);
         g_sChar.m_cLocation.X++;        
     }
     if (g_skKeyEvent[K_SPACE].keyReleased)
     {
+       
         g_sChar.m_bActive = !g_sChar.m_bActive;        
     }
 
@@ -291,7 +292,7 @@ void render()
 void clearScreen()
 {
     // Clears the buffer with this colour attribute
-    g_Console.clearBuffer(0x1F);
+    g_Console.clearBuffer();
 }
 
 void renderToScreen()
@@ -322,20 +323,19 @@ void renderGame()
 
 void renderMap()
 {
-    // Set up sample colours, and output shadings
-    const WORD colors[] = {
-        0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F,
-        0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6
-    };
-
-    COORD c;
-    for (int i = 0; i < 12; ++i)
+    COORD Map = g_Console.getConsoleSize();
+    Map.Y /= 4;
+    Map.X = Map.X / 2 - 11;
+    g_Console.writeToBuffer(Map, "####################", 0x03);
+    for (int i = 0; i < 17; i++)
     {
-        c.X = 5 * i;
-        c.Y = i + 1;
-        colour(colors[i]);
-        g_Console.writeToBuffer(c, " °±²Û", colors[i]);
+        Map.Y += 1;
+        Map.X = g_Console.getConsoleSize().X / 2 - 11;
+        g_Console.writeToBuffer(Map, "#                  #", 0x09);
     }
+    Map.Y += 1;
+    Map.X = g_Console.getConsoleSize().X / 2 - 11;
+    g_Console.writeToBuffer(Map, "####################", 0x03);
 }
 
 void renderCharacter()
