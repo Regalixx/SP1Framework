@@ -15,6 +15,7 @@ SMouseEvent g_mouseEvent;
 // Game specific variables here
 SGameChar   g_sChar;
 SBulletChar* g_bullet[5] = { nullptr, nullptr ,nullptr ,nullptr ,nullptr };
+SFireChar* g_sFire[18] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
 EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
 
 // Console object
@@ -34,7 +35,7 @@ void init(void)
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
-
+    
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
     g_sChar.m_cLocation.Y = 23;
     g_sChar.m_bActive = true;
@@ -324,6 +325,7 @@ void renderGame()
     renderMap();        // renders the map to the buffer first
     renderBullet();     // renders the bullets into the buffer
     renderCharacter();  // renders the character into the buffer
+    renderFire();
 }
 
 void renderMap()
@@ -376,6 +378,37 @@ void renderCharacter()
     }
     g_Console.writeToBuffer(g_sChar.m_cLocation, "P", charColor);
 }
+
+
+void renderFire()
+{
+    for (int i = 0; i < 18; i++)
+    {
+        if (g_sFire[i] == nullptr)
+        {
+            g_sFire[i] = new SFireChar;
+            g_sFire[i]->fireLocation.X = 30 + (i);
+            g_sFire[i]->fireLocation.Y = 7;
+            /*
+            if (i < 3)
+            {
+                g_sFire[i]->fireLocation.Y = 7;
+            }
+            else
+            {
+                g_sFire[i]->fireLocation.Y = 8;
+            }
+
+            */
+        }
+        if (g_sFire[i] != nullptr)
+        {
+            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
+        }
+    }
+}
+
+
 
 void renderFramerate()
 {
@@ -468,8 +501,6 @@ void renderInputEvents()
     }
 
 }
-
-
 
 
 
