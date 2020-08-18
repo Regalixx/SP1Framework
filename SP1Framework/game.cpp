@@ -26,10 +26,10 @@ Console g_Console(80, 25, "testest");//setconsolesize
 // Input    : void
 // Output   : void
 //--------------------------------------------------------------
-void init( void )
+void init(void)
 {
     // Set precision for floating point output
-    g_dElapsedTime = 0.0;    
+    g_dElapsedTime = 0.0;
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
@@ -52,7 +52,7 @@ void init( void )
 // Input    : Void
 // Output   : void
 //--------------------------------------------------------------
-void shutdown( void )
+void shutdown(void)
 {
     // Reset to white text on black background
     colour(FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
@@ -73,12 +73,12 @@ void shutdown( void )
 // Input    : Void
 // Output   : void
 //--------------------------------------------------------------
-void getInput( void )
+void getInput(void)
 {
     // resets all the keyboard events
     memset(g_skKeyEvent, 0, K_COUNT * sizeof(*g_skKeyEvent));
     // then call the console to detect input from user
-    g_Console.readConsoleInput();    
+    g_Console.readConsoleInput();
 }
 
 //--------------------------------------------------------------
@@ -95,7 +95,7 @@ void getInput( void )
 // Output   : void
 //--------------------------------------------------------------
 void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent)
-{    
+{
     switch (g_eGameState)
     {
     case S_SPLASHSCREEN: // don't handle anything for the splash screen
@@ -122,7 +122,7 @@ void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent)
 // Output   : void
 //--------------------------------------------------------------
 void mouseHandler(const MOUSE_EVENT_RECORD& mouseEvent)
-{    
+{
     switch (g_eGameState)
     {
     case S_SPLASHSCREEN: // don't handle anything for the splash screen
@@ -147,12 +147,12 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     EKEYS key = K_COUNT;
     switch (keyboardEvent.wVirtualKeyCode)
     {
-    //case VK_UP: key = K_UP; break;
-    //case VK_DOWN: key = K_DOWN; break;
-    case VK_LEFT: key = K_LEFT; break; 
-    case VK_RIGHT: key = K_RIGHT; break; 
+        //case VK_UP: key = K_UP; break;
+        //case VK_DOWN: key = K_DOWN; break;
+    case 'A': key = K_LEFT; break;
+    case 'D': key = K_RIGHT; break;
     case VK_SPACE: key = K_SPACE; break;
-    case VK_ESCAPE: key = K_ESCAPE; break; 
+    case VK_ESCAPE: key = K_ESCAPE; break;
     }
     // a key pressed event would be one with bKeyDown == true
     // a key released event would be one with bKeyDown == false
@@ -162,7 +162,7 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     {
         g_skKeyEvent[key].keyDown = keyboardEvent.bKeyDown;
         g_skKeyEvent[key].keyReleased = !keyboardEvent.bKeyDown;
-    }    
+    }
 }
 
 //--------------------------------------------------------------
@@ -206,10 +206,10 @@ void update(double dt)
 
     switch (g_eGameState)
     {
-        case S_SPLASHSCREEN : splashScreenWait(); // game logic for the splash screen
-            break;
-        case S_GAME: updateGame(); // gameplay logic when we are in the game
-            break;
+    case S_SPLASHSCREEN: splashScreenWait(); // game logic for the splash screen
+        break;
+    case S_GAME: updateGame(); // gameplay logic when we are in the game
+        break;
     }
 }
 
@@ -228,42 +228,32 @@ void updateGame()       // gameplay logic
 }
 
 void moveCharacter()
-{    
+{
     // Updating the location of the character based on the key release
     // providing a beep sound whenver we shift the character
-    if (g_skKeyEvent[K_UP].keyReleased && g_sChar.m_cLocation.Y > 0)
-    {
-        Beep(1440, 30);
-        g_sChar.m_cLocation.Y--;       
-    }
     if (g_skKeyEvent[K_LEFT].keyReleased && g_sChar.m_cLocation.X > 30)
     {
         Beep(1440, 30);
-        g_sChar.m_cLocation.X--;        
-    }
-    if (g_skKeyEvent[K_DOWN].keyReleased && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
-    {
-        Beep(1440, 30);
-        g_sChar.m_cLocation.Y++;        
+        g_sChar.m_cLocation.X--;
     }
     if (g_skKeyEvent[K_RIGHT].keyReleased && g_sChar.m_cLocation.X < 47)
     {
         Beep(1440, 30);
-        g_sChar.m_cLocation.X++;        
+        g_sChar.m_cLocation.X++;
     }
     if (g_skKeyEvent[K_SPACE].keyReleased)
     {
-       
-        g_sChar.m_bActive = !g_sChar.m_bActive;        
+
+        g_sChar.m_bActive = !g_sChar.m_bActive;
     }
 
-   
+
 }
 void processUserInput()
 {
     // quits the game if player hits the escape key
     if (g_skKeyEvent[K_ESCAPE].keyReleased)
-        g_bQuitGame = true;    
+        g_bQuitGame = true;
 }
 
 //--------------------------------------------------------------
@@ -326,16 +316,16 @@ void renderMap()
     COORD Map = g_Console.getConsoleSize();
     Map.Y /= 4;
     Map.X = Map.X / 2 - 11;
-    g_Console.writeToBuffer(Map, "####################", 0x03);
+    g_Console.writeToBuffer(Map, "xxxxxxxxxxxxxxxxxxxx", 0x03);
     for (int i = 0; i < 17; i++)
     {
         Map.Y += 1;
         Map.X = g_Console.getConsoleSize().X / 2 - 11;
-        g_Console.writeToBuffer(Map, "#                  #", 0x09);
+        g_Console.writeToBuffer(Map, "x                  x", 0x09);
     }
     Map.Y += 1;
     Map.X = g_Console.getConsoleSize().X / 2 - 11;
-    g_Console.writeToBuffer(Map, "####################", 0x03);
+    g_Console.writeToBuffer(Map, "xxxxxxxxxxxxxxxxxxxx", 0x03);
 }
 
 void renderCharacter()
@@ -372,7 +362,7 @@ void renderFramerate()
 void renderInputEvents()
 {
     // keyboard events
-    COORD startPos = {50, 2};
+    COORD startPos = { 8, 5 };
     std::ostringstream ss;
     std::string key;
     for (int i = 0; i < K_COUNT; ++i)
@@ -380,24 +370,21 @@ void renderInputEvents()
         ss.str("");
         switch (i)
         {
-        case K_UP: key = "UP";
+        case K_LEFT: key = "A to move left";
             break;
-        case K_DOWN: key = "DOWN";
+        case K_RIGHT: key = "D to move right";
             break;
-        case K_LEFT: key = "LEFT";
-            break;
-        case K_RIGHT: key = "RIGHT";
-            break;
-        case K_SPACE: key = "SPACE";
+        case K_SPACE: key = "SPACE to SHOOT";
             break;
         default: continue;
         }
         if (g_skKeyEvent[i].keyDown)
-            ss << key << " pressed";
+            ss << key << "pressed";
         else if (g_skKeyEvent[i].keyReleased)
             ss << key << " released";
         else
-            ss << key << " not pressed";
+            ss << key;
+      
 
         COORD c = { startPos.X, startPos.Y + i };
         g_Console.writeToBuffer(c, ss.str(), 0x17);
@@ -430,7 +417,7 @@ void renderInputEvents()
     case DOUBLE_CLICK:
         ss.str("Double Clicked");
         g_Console.writeToBuffer(g_mouseEvent.mousePosition.X, g_mouseEvent.mousePosition.Y + 4, ss.str(), 0x59);
-        break;        
+        break;
     case MOUSE_WHEELED:
         if (g_mouseEvent.buttonState & 0xFF000000)
             ss.str("Mouse wheeled down");
@@ -438,10 +425,10 @@ void renderInputEvents()
             ss.str("Mouse wheeled up");
         g_Console.writeToBuffer(g_mouseEvent.mousePosition.X, g_mouseEvent.mousePosition.Y + 5, ss.str(), 0x59);
         break;
-    default:        
+    default:
         break;
     }
-    
+
 }
 
 
