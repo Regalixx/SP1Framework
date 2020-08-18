@@ -14,6 +14,7 @@ SMouseEvent g_mouseEvent;
 
 // Game specific variables here
 SGameChar   g_sChar;
+SBulletChar* g_bullet[5] = { nullptr, nullptr ,nullptr ,nullptr ,nullptr };
 EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
 
 // Console object
@@ -243,11 +244,24 @@ void moveCharacter()
     }
     if (g_skKeyEvent[K_SPACE].keyReleased)
     {
-
+        shootBullet();
         g_sChar.m_bActive = !g_sChar.m_bActive;
     }
 
 
+}
+void shootBullet()
+{
+    for (int i = 0; i < 5; i++)
+    {
+        if (g_bullet[i] == nullptr)
+        {
+            g_bullet[i] = new SBulletChar;
+            g_bullet[i]->bulletLocation.X = g_sChar.m_cLocation.X;
+            g_bullet[i]->bulletLocation.Y = 22;
+            break;
+        }
+    }
 }
 void processUserInput()
 {
@@ -308,6 +322,7 @@ void renderSplashScreen()  // renders the splash screen
 void renderGame()
 {
     renderMap();        // renders the map to the buffer first
+    renderBullet();     // renders the bullets into the buffer
     renderCharacter();  // renders the character into the buffer
 }
 
@@ -326,6 +341,29 @@ void renderMap()
     Map.Y += 1;
     Map.X = g_Console.getConsoleSize().X / 2 - 11;
     g_Console.writeToBuffer(Map, "xxxxxxxxxxxxxxxxxxxx", 0x03);
+}
+
+void renderBullet()
+{
+    for (int i = 0; i < 5; i++)
+    {
+        if (g_bullet[i] != nullptr)
+        {
+            if (g_bullet[i]->bulletLocation.Y < 6)
+            {
+                if (g_bullet[i] != nullptr)
+                {
+                    delete g_bullet[i];
+                    g_bullet[i] = nullptr;
+                }
+            }
+            else
+            {
+                g_bullet[i]->bulletLocation.Y -= 1;
+                g_Console.writeToBuffer(g_bullet[i]->bulletLocation, "|", 0x03);
+            }
+        }
+    }
 }
 
 void renderCharacter()
@@ -384,7 +422,7 @@ void renderInputEvents()
             ss << key << " released";
         else
             ss << key;
-      
+
 
         COORD c = { startPos.X, startPos.Y + i };
         g_Console.writeToBuffer(c, ss.str(), 0x17);
