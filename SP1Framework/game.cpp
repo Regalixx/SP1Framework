@@ -14,8 +14,8 @@ SMouseEvent g_mouseEvent;
 
 // Game specific variables here
 SGameChar   g_sChar;
-SBulletChar* g_bullet[5] = { nullptr, nullptr ,nullptr ,nullptr ,nullptr };
-SFireChar* g_sFire[18] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
+SBulletChar* g_bullet[5] = {};
+SFireChar* g_sFire[18] = {};
 EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
 
 // Console object
@@ -35,7 +35,7 @@ void init(void)
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
-    
+
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
     g_sChar.m_cLocation.Y = 23;
     g_sChar.m_bActive = true;
@@ -45,6 +45,7 @@ void init(void)
     // remember to set your keyboard handler, so that your functions can be notified of input events
     g_Console.setKeyboardHandler(keyboardHandler);
     g_Console.setMouseHandler(mouseHandler);
+    spawnFire();
 }
 
 //--------------------------------------------------------------
@@ -264,6 +265,46 @@ void shootBullet()
         }
     }
 }
+void bulletCollision()
+{
+    for (int f = 0; f < 18; f++)
+    {
+        for (int b = 0; b < 5; b++)
+        {
+            if (g_bullet[b] != nullptr)
+            {
+                if (g_sFire[f] != nullptr)
+                {
+                    if (g_bullet[b]->bulletLocation.X == g_sFire[f]->fireLocation.X && g_bullet[b]->bulletLocation.Y == g_sFire[f]->fireLocation.Y)
+                    {
+                        delete g_bullet[b];
+                        g_bullet[b] = nullptr;
+
+                        delete g_sFire[f];
+                        g_sFire[f] = nullptr;
+                        Beep(1440, 30);
+                    }
+                }
+            }
+        }
+    }
+}
+void spawnFire()
+{
+    for (int i = 0; i < 18; i++)
+    {
+        if (g_sFire[i] == nullptr)
+        {
+            g_sFire[i] = new SFireChar;
+            g_sFire[i]->fireLocation.X = 30 + (i);
+            g_sFire[i]->fireLocation.Y = 10;
+        }
+        if (g_sFire[i] != nullptr)
+        {
+            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
+        }
+    }
+}
 void processUserInput()
 {
     // quits the game if player hits the escape key
@@ -323,9 +364,9 @@ void renderSplashScreen()  // renders the splash screen
 void renderGame()
 {
     renderMap();        // renders the map to the buffer first
+    renderFire();
     renderBullet();     // renders the bullets into the buffer
     renderCharacter();  // renders the character into the buffer
-    renderFire();
 }
 
 void renderMap()
@@ -351,12 +392,13 @@ void renderBullet()
     {
         if (g_bullet[i] != nullptr)
         {
-            if (g_bullet[i]->bulletLocation.Y < 6)
+            if (g_bullet[i]->bulletLocation.Y < 7)
             {
                 if (g_bullet[i] != nullptr)
                 {
                     delete g_bullet[i];
                     g_bullet[i] = nullptr;
+                    Beep(100, 100);
                 }
             }
             else
@@ -364,6 +406,7 @@ void renderBullet()
                 g_bullet[i]->bulletLocation.Y -= 1;
                 g_Console.writeToBuffer(g_bullet[i]->bulletLocation, "|", 0x03);
             }
+            bulletCollision();
         }
     }
 }
@@ -384,31 +427,12 @@ void renderFire()
 {
     for (int i = 0; i < 18; i++)
     {
-        if (g_sFire[i] == nullptr)
-        {
-            g_sFire[i] = new SFireChar;
-            g_sFire[i]->fireLocation.X = 30 + (i);
-            g_sFire[i]->fireLocation.Y = 7;
-            /*
-            if (i < 3)
-            {
-                g_sFire[i]->fireLocation.Y = 7;
-            }
-            else
-            {
-                g_sFire[i]->fireLocation.Y = 8;
-            }
-
-            */
-        }
         if (g_sFire[i] != nullptr)
         {
             g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
         }
     }
 }
-
-
 
 void renderFramerate()
 {
@@ -501,7 +525,6 @@ void renderInputEvents()
     }
 
 }
-
 
 
 
