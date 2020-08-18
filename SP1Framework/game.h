@@ -50,16 +50,21 @@ struct SGameChar
     bool  m_bActive;
 };
 
+struct SFireChar
+{
+    COORD fireLocation;
+};
+
 struct SBulletChar
 {
     COORD bulletLocation;
 };
 
-void init        ( void );      // initialize your variables, allocate memory, etc
-void getInput    ( void );      // get input from player
-void update      ( double dt ); // update the game and the state of the game
-void render      ( void );      // renders the current state of the game to the console
-void shutdown    ( void );      // do clean up, free memory
+void init(void);      // initialize your variables, allocate memory, etc
+void getInput(void);      // get input from player
+void update(double dt); // update the game and the state of the game
+void render(void);      // renders the current state of the game to the console
+void shutdown(void);      // do clean up, free memory
 
 void splashScreenWait();    // waits for time to pass in splash screen
 void updateGame();          // gameplay logic
@@ -72,6 +77,7 @@ void renderGame();          // renders the game stuff
 void renderMap();           // renders the map to the buffer first
 void renderBullet();        // renders the bullet
 void renderCharacter();     // renders the character into the buffer
+void renderFire();
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
 void renderInputEvents();   // renders the status of input events
