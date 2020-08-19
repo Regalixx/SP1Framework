@@ -20,6 +20,7 @@ SFireChar* g_sFire[36] = {};
 int scorecounter = 0;
 int playerMove = 0;
 bool fireMove = false;
+int LivesLeft = 5;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
 
 // Console object
@@ -275,7 +276,18 @@ void moveFire()
             for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
             {
                 if (g_sFire[i] != nullptr)
+                {
                     g_sFire[i]->fireLocation.Y++;
+
+                    if (g_sFire[i]->fireLocation.Y > 23)
+                    {
+                        delete g_sFire[i];
+                        g_sFire[i] = nullptr;
+                        LivesLeft = LivesLeft - 1;
+                    }
+                }
+
+
             }
         }
         fireMove = false;
@@ -430,7 +442,6 @@ void renderMenuStats() {
     COORD startPos = { 50, 5 };
     std::ostringstream ss;
     std::string stats;
-    const int LivesLeft = 5;
     const int Score = 0;
     const int Level = 1;
     const int playerMove = 0;
