@@ -16,7 +16,7 @@ SMouseEvent g_mouseEvent;
 // Game specific variables here
 SGameChar   g_sChar;
 SBulletChar* g_bullet[5] = {};
-SFireChar* g_sFire[18] = {};
+SFireChar* g_sFire[36] = {};
 int scorecounter = 0;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
 
@@ -47,8 +47,8 @@ void init(void)
     // remember to set your keyboard handler, so that your functions can be notified of input events
     g_Console.setKeyboardHandler(keyboardHandler);
     g_Console.setMouseHandler(mouseHandler);
-    spawnFire();
-    
+    spawnFire(0);
+
 }
 
 //--------------------------------------------------------------
@@ -206,7 +206,7 @@ void gameplayMouseHandler(const MOUSE_EVENT_RECORD& mouseEvent)
 //--------------------------------------------------------------
 void update(double dt)
 {
-    
+
     // get the delta time
     g_dElapsedTime += dt;
     g_dDeltaTime = dt;
@@ -271,7 +271,7 @@ void shootBullet()
 }
 void bulletCollision()
 {
-    for (int f = 0; f < 18; f++)
+    for (int f = 0; f < 36; f++)
     {
         for (int b = 0; b < 5; b++)
         {
@@ -294,19 +294,53 @@ void bulletCollision()
         }
     }
 }
-void spawnFire()
+void spawnFire(int wave)
 {
-    for (int i = 0; i < 18; i++)
+    switch (wave)
     {
-        if (g_sFire[i] == nullptr)
+    case 0:
+        for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
         {
-            g_sFire[i] = new SFireChar;
-            g_sFire[i]->fireLocation.X = 30 + (i);
-            g_sFire[i]->fireLocation.Y = 10;
+            if (g_sFire[i] == nullptr)
+            {
+                g_sFire[i] = new SFireChar;
+                if (i < 18)
+                {
+                    g_sFire[i]->fireLocation.X = 30 + (i);
+                    g_sFire[i]->fireLocation.Y = 8;
+                }
+                else
+                {
+                    g_sFire[i]->fireLocation.X = 12 + (i);
+                    g_sFire[i]->fireLocation.Y = 7;
+                }
+            }
+            if (g_sFire[i] != nullptr)
+            {
+                g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
+            }
         }
-        if (g_sFire[i] != nullptr)
+    case 1:
+        for (int i = 0; i < 18; i++)
         {
-            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
+            if (g_sFire[i] == nullptr)
+            {
+                g_sFire[i] = new SFireChar;
+                if (i < 9)
+                {
+                    g_sFire[i]->fireLocation.X = 36 + (i);
+                    g_sFire[i]->fireLocation.Y = 10;
+                }
+                else
+                {
+                    g_sFire[i]->fireLocation.X = 27 + (i);
+                    g_sFire[i]->fireLocation.Y = 11;
+                }
+            }
+            if (g_sFire[i] != nullptr)
+            {
+                g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
+            }
         }
     }
 }
@@ -379,22 +413,22 @@ void renderMenuStats() {
         ss.str("");
         switch (i)
         {
-        case K_LEFT: 
-        ss <<    "Lives left:",stats = "" ,ss << LivesLeft;
+        case K_LEFT:
+            ss << "Lives left:", stats = "", ss << LivesLeft;
             break;
-        case K_RIGHT: 
-         ss <<   "Score:",stats = "", ss << scorecounter;
+        case K_RIGHT:
+            ss << "Score:", stats = "", ss << scorecounter;
             break;
-        case K_SPACE: 
+        case K_SPACE:
             ss << "";
             break;
         default:ss << "Stage:", stats = "", ss << Level;
         }
-        
-            ss << stats;
+
+        ss << stats;
 
 
-        COORD c = { startPos.X, startPos.Y + i};
+        COORD c = { startPos.X, startPos.Y + i };
         g_Console.writeToBuffer(c, ss.str(), FOREGROUND_GREEN);
     }
 }
@@ -404,7 +438,7 @@ void renderGame()
     renderMap();        // renders the map to the buffer first
     renderFire();
     renderBullet();     // renders the bullets into the buffer
-    renderCharacter(); 
+    renderCharacter();
     renderMenuStats();// renders the character into the buffer
 }
 
@@ -427,17 +461,17 @@ void renderMap()
 
 void renderBullet()
 {
-    for (int i = 2; i < 5; i++)
+    for (int i = 0; i < 5; i++)
     {
         if (g_bullet[i] != nullptr)
         {
-            if (g_bullet[i]->bulletLocation.Y < 7)
+            if (g_bullet[i]->bulletLocation.Y == 7)
             {
                 if (g_bullet[i] != nullptr)
                 {
                     delete g_bullet[i];
                     g_bullet[i] = nullptr;
-                    Beep(100, 100);
+                    //Beep(100, 100);
                 }
             }
             else
@@ -464,7 +498,7 @@ void renderCharacter()
 
 void renderFire()
 {
-    for (int i = 0; i < 18; i++)
+    for (int i = 0; i < 36; i++)
     {
         if (g_sFire[i] != nullptr)
         {
