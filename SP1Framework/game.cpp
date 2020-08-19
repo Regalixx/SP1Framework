@@ -227,8 +227,9 @@ void update(double dt)
         break;
     case S_GAME: updateGame(); // gameplay logic when we are in the game
         break;
-    
     case S_LEVEL1: splashScreenWait();
+        break;
+    case S_GAMEOVER : renderSplashScreenGameOver();
         break;
     }
 }
@@ -516,6 +517,18 @@ void renderSplashScreenLevel1()  // renders the splash screen
     splashScreenWaitLevel1();
    
 }
+void renderSplashScreenGameOver()
+{
+    clearScreen();
+    COORD c = g_Console.getConsoleSize();
+    c.Y /= 3;
+    c.X = c.X / 2 - 5;
+    g_Console.writeToBuffer(c, "GAME OVER YOU LOST!", 0x03);
+    c.Y += 1;
+    c.X = g_Console.getConsoleSize().X / 2 - 9;
+    g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
+
+}
 
 void renderGame()
 {
@@ -524,6 +537,10 @@ void renderGame()
     renderBullet();     // renders the bullets into the buffer
     renderCharacter();
     renderMenuStats();// renders the character into the buffer
+    if (LivesLeft <= 0) {
+        clearScreen();
+        renderSplashScreenGameOver();
+    }
 }
 
 void renderMap()
