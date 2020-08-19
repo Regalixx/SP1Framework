@@ -17,7 +17,7 @@ SMouseEvent g_mouseEvent;
 SGameChar   g_sChar;
 SBulletChar* g_bullet[5] = {};
 SFireChar* g_sFire[36] = {};
-int scorecounter = 0;
+int TutorialEnemies = 36;
 int playerMove = 0;
 bool fireMove = false;
 int LivesLeft = 5;
@@ -40,7 +40,6 @@ void init(void)
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
-
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
     g_sChar.m_cLocation.Y = 23;
     g_sChar.m_bActive = true;
@@ -50,7 +49,7 @@ void init(void)
     // remember to set your keyboard handler, so that your functions can be notified of input events
     g_Console.setKeyboardHandler(keyboardHandler);
     g_Console.setMouseHandler(mouseHandler);
-    spawnFire(0);   
+    spawnFire(0);
 
 }
 
@@ -111,6 +110,8 @@ void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent)
         break;
     case S_GAME: gameplayKBHandler(keyboardEvent); // handle gameplay keyboard event 
         break;
+    case S_LEVEL1:
+        break;
     }
 }
 
@@ -138,6 +139,8 @@ void mouseHandler(const MOUSE_EVENT_RECORD& mouseEvent)
         break;
     case S_GAME: gameplayMouseHandler(mouseEvent); // handle gameplay mouse event
         break;
+    case S_LEVEL1:
+        break;
     }
 }
 
@@ -156,7 +159,7 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     EKEYS key = K_COUNT;
     switch (keyboardEvent.wVirtualKeyCode)
     {
-    case VK_UP: key = K_UP; break;
+        //case VK_UP: key = K_UP; break;
         //case VK_DOWN: key = K_DOWN; break;
     case 'A': key = K_LEFT; break;
     case 'D': key = K_RIGHT; break;
@@ -214,11 +217,18 @@ void update(double dt)
     g_dElapsedTime += dt;
     g_dDeltaTime = dt;
 
+    if (TutorialEnemies == 0) {
+        g_eGameState = S_LEVEL1;
+    }
+
     switch (g_eGameState)
     {
     case S_SPLASHSCREEN: splashScreenWait(); // game logic for the splash screen
         break;
     case S_GAME: updateGame(); // gameplay logic when we are in the game
+        break;
+    
+    case S_LEVEL1: splashScreenWait();
         break;
     }
 }
@@ -229,12 +239,24 @@ void splashScreenWait()    // waits for time to pass in splash screen
     if (g_dElapsedTime > 3.0) // wait for 3 seconds to switch to game mode, else do nothing
         g_eGameState = S_GAME;
 }
+void splashScreenWaitLevel1()    // waits for time to pass in splash screen
+{
+    if (g_dElapsedTime > 3.0) // wait for 3 seconds to switch to game mode, else do nothing
+        g_eGameState = S_LEVEL1;
+}
+
+
 
 void updateGame()       // gameplay logic
 {
+    if (TutorialEnemies == 0) {
+        g_eGameState = S_LEVEL1;
+    }
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
-    moveCharacter();    // moves the character, collision detection, physics, etc
+    moveCharacter(); 
     moveFire();
+
+   // moves the character, collision detection, physics, etc
                         // sound can be played here too.
 }
 
@@ -247,26 +269,25 @@ void moveCharacter()
         Beep(1440, 30);
         g_sChar.m_cLocation.X--;
         playerMove++;
-        fireMove = true;
+        fireMove = TRUE;
     }
     if (g_skKeyEvent[K_RIGHT].keyReleased && g_sChar.m_cLocation.X < 47)
     {
         Beep(1440, 30);
         g_sChar.m_cLocation.X++;
         playerMove++;
-        fireMove = true;
+        fireMove = TRUE;
     }
     if (g_skKeyEvent[K_SPACE].keyReleased)
     {
         shootBullet();
         g_sChar.m_bActive = !g_sChar.m_bActive;
         playerMove++;
-        fireMove = true;
+        fireMove = TRUE;
     }
 
 
 }
-
 void moveFire()
 {
     if (fireMove)
@@ -306,6 +327,38 @@ void shootBullet()
         }
     }
 }
+void renderMenuStats() {
+
+    COORD startPos = { 50, 5 };
+    std::ostringstream ss;
+    std::string stats;
+    const int Score = 0;
+    const int Level = 1;
+    for (int i = 2; i < K_COUNT; ++i)
+    {
+        ss.str("");
+        switch (i)
+        {
+        case K_LEFT:
+            ss << "Lives left:", stats = "", ss << LivesLeft;
+            break;
+        case K_RIGHT:
+            ss << "Enemies Left:", stats = "", ss << TutorialEnemies;
+            break;
+        case K_SPACE:
+            ss << "";
+            break;
+        default:ss << "Stage:", stats = "", ss << Level;
+        }
+
+        ss << stats;
+
+
+        COORD c = { startPos.X, startPos.Y + i };
+        g_Console.writeToBuffer(c, ss.str(), FOREGROUND_GREEN);
+    }
+}
+
 void bulletCollision()
 {
     for (int f = 0; f < 36; f++)
@@ -318,13 +371,21 @@ void bulletCollision()
                 {
                     if (g_bullet[b]->bulletLocation.X == g_sFire[f]->fireLocation.X && g_bullet[b]->bulletLocation.Y == g_sFire[f]->fireLocation.Y)
                     {
-                        scorecounter++;
+                        TutorialEnemies--;
                         delete g_bullet[b];
                         g_bullet[b] = nullptr;
 
                         delete g_sFire[f];
                         g_sFire[f] = nullptr;
-                        //Beep(440, 300);
+                        Beep(1440, 30);
+
+                        if (TutorialEnemies == 0) {
+                            g_dElapsedTime = 0;
+                            g_eGameState == S_LEVEL1;
+                        }
+                        if (g_dElapsedTime > 3.0)
+                        renderSplashScreenLevel1();
+                        
                     }
                 }
             }
@@ -405,10 +466,13 @@ void render()
         break;
     case S_GAME: renderGame();
         break;
+    case S_LEVEL1: renderSplashScreenLevel1();
+        break;
     }
     renderFramerate();      // renders debug information, frame rate, elapsed time, etc
     renderInputEvents();    // renders status of input events
-    renderToScreen();       // dump the contents of the buffer to the screen, one frame worth of game
+    renderToScreen();  
+    
 }
 
 void clearScreen()
@@ -436,41 +500,21 @@ void renderSplashScreen()  // renders the splash screen
     c.X = g_Console.getConsoleSize().X / 2 - 9;
     g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
 }
-
-void renderMenuStats() {
-
-    COORD startPos = { 50, 5 };
-    std::ostringstream ss;
-    std::string stats;
-    const int Score = 0;
-    const int Level = 1;
-    const int playerMove = 0;
-    for (int i = 2; i < K_COUNT; ++i)
-    {
-        ss.str("");
-        switch (i)
-        {
-        case K_LEFT:
-            ss << "Lives left:", stats = "", ss << LivesLeft;
-            break;
-        case K_RIGHT:
-            ss << "Score:", stats = "", ss << scorecounter;
-            break;
-        case K_UP:
-            ss << "player movement:", stats = "", ss << playerMove;
-            break;
-        case K_SPACE:
-            ss << "";
-            break;
-        default:ss << "Stage:", stats = "", ss << Level;
-        }
-
-        ss << stats;
-
-
-        COORD c = { startPos.X, startPos.Y + i };
-        g_Console.writeToBuffer(c, ss.str(), FOREGROUND_GREEN);
-    }
+void renderSplashScreenLevel1()  // renders the splash screen
+{
+    clearScreen();
+    COORD c = g_Console.getConsoleSize();
+    c.Y /= 3;
+    c.X = c.X / 2 - 5;
+    g_Console.writeToBuffer(c, "STAGE 1", 0x03);
+    c.Y += 1;
+    c.X = g_Console.getConsoleSize().X / 2 - 25;
+    g_Console.writeToBuffer(c, "Press <Space> to fire and change character colour", 0x09);
+    c.Y += 1;
+    c.X = g_Console.getConsoleSize().X / 2 - 9;
+    g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
+    splashScreenWaitLevel1();
+   
 }
 
 void renderGame()
@@ -511,7 +555,7 @@ void renderBullet()
                 {
                     delete g_bullet[i];
                     g_bullet[i] = nullptr;
-                    Beep(100, 100);
+                    //Beep(100, 100);
                 }
             }
             else
@@ -638,4 +682,3 @@ void renderInputEvents()
     }
 
 }
-
