@@ -69,6 +69,7 @@ void shutdown(void);      // do clean up, free memory
 void splashScreenWait();    // waits for time to pass in splash screen
 void updateGame();          // gameplay logic
 void moveCharacter();       // moves the character, collision detection, physics, etc
+void moveFire();
 void shootBullet();         // Shoots a bullet from player position;
 void bulletCollision();     // Detects if a bullet has collided with the fire
 void spawnFire(int wave);           // Spawns fire
