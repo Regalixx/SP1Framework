@@ -12,10 +12,12 @@ double  g_dDeltaTime;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
 
+
 // Game specific variables here
 SGameChar   g_sChar;
-SBulletChar* g_bullet[5] = { nullptr, nullptr ,nullptr ,nullptr ,nullptr };
-SFireChar* g_sFire[18] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
+SBulletChar* g_bullet[5] = {};
+SFireChar* g_sFire[36] = {};
+int scorecounter = 0;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
 
 // Console object
@@ -35,7 +37,7 @@ void init(void)
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
-    
+
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
     g_sChar.m_cLocation.Y = 23;
     g_sChar.m_bActive = true;
@@ -45,6 +47,8 @@ void init(void)
     // remember to set your keyboard handler, so that your functions can be notified of input events
     g_Console.setKeyboardHandler(keyboardHandler);
     g_Console.setMouseHandler(mouseHandler);
+    spawnFire(0);
+
 }
 
 //--------------------------------------------------------------
@@ -202,6 +206,7 @@ void gameplayMouseHandler(const MOUSE_EVENT_RECORD& mouseEvent)
 //--------------------------------------------------------------
 void update(double dt)
 {
+
     // get the delta time
     g_dElapsedTime += dt;
     g_dDeltaTime = dt;
@@ -264,6 +269,81 @@ void shootBullet()
         }
     }
 }
+void bulletCollision()
+{
+    for (int f = 0; f < 36; f++)
+    {
+        for (int b = 0; b < 5; b++)
+        {
+            if (g_bullet[b] != nullptr)
+            {
+                if (g_sFire[f] != nullptr)
+                {
+                    if (g_bullet[b]->bulletLocation.X == g_sFire[f]->fireLocation.X && g_bullet[b]->bulletLocation.Y == g_sFire[f]->fireLocation.Y)
+                    {
+                        scorecounter++;
+                        delete g_bullet[b];
+                        g_bullet[b] = nullptr;
+
+                        delete g_sFire[f];
+                        g_sFire[f] = nullptr;
+                        Beep(1440, 30);
+                    }
+                }
+            }
+        }
+    }
+}
+void spawnFire(int wave)
+{
+    switch (wave)
+    {
+    case 0:
+        for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
+        {
+            if (g_sFire[i] == nullptr)
+            {
+                g_sFire[i] = new SFireChar;
+                if (i < 18)
+                {
+                    g_sFire[i]->fireLocation.X = 30 + (i);
+                    g_sFire[i]->fireLocation.Y = 8;
+                }
+                else
+                {
+                    g_sFire[i]->fireLocation.X = 12 + (i);
+                    g_sFire[i]->fireLocation.Y = 7;
+                }
+            }
+            if (g_sFire[i] != nullptr)
+            {
+                g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
+            }
+        }
+    case 1:
+        for (int i = 0; i < 18; i++)
+        {
+            if (g_sFire[i] == nullptr)
+            {
+                g_sFire[i] = new SFireChar;
+                if (i < 9)
+                {
+                    g_sFire[i]->fireLocation.X = 36 + (i);
+                    g_sFire[i]->fireLocation.Y = 10;
+                }
+                else
+                {
+                    g_sFire[i]->fireLocation.X = 27 + (i);
+                    g_sFire[i]->fireLocation.Y = 11;
+                }
+            }
+            if (g_sFire[i] != nullptr)
+            {
+                g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
+            }
+        }
+    }
+}
 void processUserInput()
 {
     // quits the game if player hits the escape key
@@ -320,12 +400,46 @@ void renderSplashScreen()  // renders the splash screen
     g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
 }
 
+void renderMenuStats() {
+
+    COORD startPos = { 50, 5 };
+    std::ostringstream ss;
+    std::string stats;
+    const int LivesLeft = 5;
+    const int Score = 0;
+    const int Level = 1;
+    for (int i = 2; i < K_COUNT; ++i)
+    {
+        ss.str("");
+        switch (i)
+        {
+        case K_LEFT:
+            ss << "Lives left:", stats = "", ss << LivesLeft;
+            break;
+        case K_RIGHT:
+            ss << "Score:", stats = "", ss << scorecounter;
+            break;
+        case K_SPACE:
+            ss << "";
+            break;
+        default:ss << "Stage:", stats = "", ss << Level;
+        }
+
+        ss << stats;
+
+
+        COORD c = { startPos.X, startPos.Y + i };
+        g_Console.writeToBuffer(c, ss.str(), FOREGROUND_GREEN);
+    }
+}
+
 void renderGame()
 {
     renderMap();        // renders the map to the buffer first
-    renderBullet();     // renders the bullets into the buffer
-    renderCharacter();  // renders the character into the buffer
     renderFire();
+    renderBullet();     // renders the bullets into the buffer
+    renderCharacter();
+    renderMenuStats();// renders the character into the buffer
 }
 
 void renderMap()
@@ -351,12 +465,13 @@ void renderBullet()
     {
         if (g_bullet[i] != nullptr)
         {
-            if (g_bullet[i]->bulletLocation.Y < 6)
+            if (g_bullet[i]->bulletLocation.Y == 7)
             {
                 if (g_bullet[i] != nullptr)
                 {
                     delete g_bullet[i];
                     g_bullet[i] = nullptr;
+                    //Beep(100, 100);
                 }
             }
             else
@@ -364,6 +479,7 @@ void renderBullet()
                 g_bullet[i]->bulletLocation.Y -= 1;
                 g_Console.writeToBuffer(g_bullet[i]->bulletLocation, "|", 0x03);
             }
+            bulletCollision();
         }
     }
 }
@@ -382,33 +498,14 @@ void renderCharacter()
 
 void renderFire()
 {
-    for (int i = 0; i < 18; i++)
+    for (int i = 0; i < 36; i++)
     {
-        if (g_sFire[i] == nullptr)
-        {
-            g_sFire[i] = new SFireChar;
-            g_sFire[i]->fireLocation.X = 30 + (i);
-            g_sFire[i]->fireLocation.Y = 7;
-            /*
-            if (i < 3)
-            {
-                g_sFire[i]->fireLocation.Y = 7;
-            }
-            else
-            {
-                g_sFire[i]->fireLocation.Y = 8;
-            }
-
-            */
-        }
         if (g_sFire[i] != nullptr)
         {
             g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
         }
     }
 }
-
-
 
 void renderFramerate()
 {
@@ -436,7 +533,7 @@ void renderInputEvents()
     COORD startPos = { 8, 5 };
     std::ostringstream ss;
     std::string key;
-    for (int i = 0; i < K_COUNT; ++i)
+    for (int i = 2; i < K_COUNT; ++i)
     {
         ss.str("");
         switch (i)
@@ -445,9 +542,9 @@ void renderInputEvents()
             break;
         case K_RIGHT: key = "D to move right";
             break;
-        case K_SPACE: key = "SPACE to SHOOT";
+        case K_SPACE: key = "";
             break;
-        default: continue;
+        default: key = "SPACE TO SHOOT";
         }
         if (g_skKeyEvent[i].keyDown)
             ss << key << "pressed";
@@ -458,7 +555,7 @@ void renderInputEvents()
 
 
         COORD c = { startPos.X, startPos.Y + i };
-        g_Console.writeToBuffer(c, ss.str(), 0x17);
+        g_Console.writeToBuffer(c, ss.str(), FOREGROUND_RED);
     }
 
     // mouse events    
@@ -501,8 +598,4 @@ void renderInputEvents()
     }
 
 }
-
-
-
-
 
