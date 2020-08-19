@@ -219,6 +219,8 @@ void update(double dt)
 
     if (TutorialEnemies == 0) {
         g_eGameState = S_LEVEL1;
+        updateGame();
+        renderGame();
     }
 
     switch (g_eGameState)
@@ -250,9 +252,6 @@ void splashScreenWaitLevel1()    // waits for time to pass in splash screen
 
 void updateGame()       // gameplay logic
 {
-    if (TutorialEnemies == 0) {
-        g_eGameState = S_LEVEL1;
-    }
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter(); 
     moveFire();
@@ -384,8 +383,7 @@ void bulletCollision()
                             g_dElapsedTime = 0;
                             g_eGameState == S_LEVEL1;
                         }
-                        if (g_dElapsedTime > 3.0)
-                        renderSplashScreenLevel1();
+                        
                         
                     }
                 }
@@ -514,7 +512,7 @@ void renderSplashScreenLevel1()  // renders the splash screen
     c.Y += 1;
     c.X = g_Console.getConsoleSize().X / 2 - 9;
     g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
-    splashScreenWaitLevel1();
+    
    
 }
 void renderSplashScreenGameOver()
