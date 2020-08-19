@@ -18,6 +18,8 @@ SGameChar   g_sChar;
 SBulletChar* g_bullet[5] = {};
 SFireChar* g_sFire[36] = {};
 int scorecounter = 0;
+int playerMove = 0;
+bool fireMove = false;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
 
 // Console object
@@ -47,7 +49,7 @@ void init(void)
     // remember to set your keyboard handler, so that your functions can be notified of input events
     g_Console.setKeyboardHandler(keyboardHandler);
     g_Console.setMouseHandler(mouseHandler);
-    spawnFire(0);
+    spawnFire(0);   
 
 }
 
@@ -153,7 +155,7 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     EKEYS key = K_COUNT;
     switch (keyboardEvent.wVirtualKeyCode)
     {
-        //case VK_UP: key = K_UP; break;
+    case VK_UP: key = K_UP; break;
         //case VK_DOWN: key = K_DOWN; break;
     case 'A': key = K_LEFT; break;
     case 'D': key = K_RIGHT; break;
@@ -231,6 +233,7 @@ void updateGame()       // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
+    moveFire();
                         // sound can be played here too.
 }
 
@@ -242,19 +245,41 @@ void moveCharacter()
     {
         Beep(1440, 30);
         g_sChar.m_cLocation.X--;
+        playerMove++;
+        fireMove = true;
     }
     if (g_skKeyEvent[K_RIGHT].keyReleased && g_sChar.m_cLocation.X < 47)
     {
         Beep(1440, 30);
         g_sChar.m_cLocation.X++;
+        playerMove++;
+        fireMove = true;
     }
     if (g_skKeyEvent[K_SPACE].keyReleased)
     {
         shootBullet();
         g_sChar.m_bActive = !g_sChar.m_bActive;
+        playerMove++;
+        fireMove = true;
     }
 
 
+}
+
+void moveFire()
+{
+    if (fireMove)
+    {
+        if (playerMove % 8 == 0)
+        {
+            for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
+            {
+                if (g_sFire[i] != nullptr)
+                    g_sFire[i]->fireLocation.Y++;
+            }
+        }
+        fireMove = false;
+    }
 }
 void shootBullet()
 {
@@ -287,7 +312,7 @@ void bulletCollision()
 
                         delete g_sFire[f];
                         g_sFire[f] = nullptr;
-                        Beep(1440, 30);
+                        //Beep(440, 300);
                     }
                 }
             }
@@ -408,6 +433,7 @@ void renderMenuStats() {
     const int LivesLeft = 5;
     const int Score = 0;
     const int Level = 1;
+    const int playerMove = 0;
     for (int i = 2; i < K_COUNT; ++i)
     {
         ss.str("");
@@ -418,6 +444,9 @@ void renderMenuStats() {
             break;
         case K_RIGHT:
             ss << "Score:", stats = "", ss << scorecounter;
+            break;
+        case K_UP:
+            ss << "player movement:", stats = "", ss << playerMove;
             break;
         case K_SPACE:
             ss << "";
@@ -471,7 +500,7 @@ void renderBullet()
                 {
                     delete g_bullet[i];
                     g_bullet[i] = nullptr;
-                    //Beep(100, 100);
+                    Beep(100, 100);
                 }
             }
             else
