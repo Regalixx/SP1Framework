@@ -16,7 +16,7 @@ SMouseEvent g_mouseEvent;
 // Game specific variables here
 SGameChar   g_sChar;
 SBulletChar* g_bullet[5] = {};
-SFireChar* g_sFire[36] = {};
+SFireChar* g_sFire[100] = {};
 int TutorialEnemies = 36;
 int playerMove = 0;
 bool fireMove = false;
@@ -220,7 +220,7 @@ void update(double dt)
 
     if (TutorialEnemies == 0) {
         g_eGameState = S_LEVEL1;
-        spawnFire(0);
+        spawnFire(1);
         updateGame();
         renderGame();
     }
@@ -233,7 +233,7 @@ void update(double dt)
         break;
     case S_LEVEL1: splashScreenWait();
         break;
-    case S_GAMEOVER : renderSplashScreenGameOver();
+    case S_GAMEOVER: renderSplashScreenGameOver();
         break;
     }
 }
@@ -255,11 +255,11 @@ void splashScreenWaitLevel1()    // waits for time to pass in splash screen
 void updateGame()       // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
-    moveCharacter(); 
+    moveCharacter();
     moveFire();
 
-   // moves the character, collision detection, physics, etc
-                        // sound can be played here too.
+    // moves the character, collision detection, physics, etc
+                         // sound can be played here too.
 }
 
 void moveCharacter()
@@ -283,7 +283,7 @@ void moveCharacter()
     if (g_skKeyEvent[K_SPACE].keyReleased)
     {
         shootBullet();
-       // g_sChar.m_bActive = !g_sChar.m_bActive;
+        // g_sChar.m_bActive = !g_sChar.m_bActive;
         playerMove++;
         fireMove = TRUE;
     }
@@ -316,8 +316,6 @@ void moveFire()
 
                     }
                 }
-
-
             }
         }
         fireMove = false;
@@ -368,7 +366,7 @@ void renderMenuStats() {
 
 void bulletCollision()
 {
-    for (int f = 0; f < 36; f++)
+    for (int f = 0; f < 100; f++)
     {
         for (int b = 0; b < 5; b++)
         {
@@ -391,8 +389,8 @@ void bulletCollision()
                             g_eGameState == S_LEVEL1;
                             stagecounter++;
                         }
-                        
-                        
+
+
                     }
                 }
             }
@@ -404,7 +402,7 @@ void spawnFire(int wave)
     switch (wave)
     {
     case 0:
-        for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
+        for (int i = 0; i < 36; i++)
         {
             if (g_sFire[i] == nullptr)
             {
@@ -420,33 +418,42 @@ void spawnFire(int wave)
                     g_sFire[i]->fireLocation.Y = 7;
                 }
             }
-            if (g_sFire[i] != nullptr)
-            {
-                g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
-            }
         }
+        break;
     case 1:
-        for (int i = 0; i < 18; i++)
+        for (int i = 0; i < 90; i++)
         {
             if (g_sFire[i] == nullptr)
             {
                 g_sFire[i] = new SFireChar;
-                if (i < 9)
+                if (i < 18)
                 {
-                    g_sFire[i]->fireLocation.X = 36 + (i);
+                    g_sFire[i]->fireLocation.X = 30 + (i);
+                    g_sFire[i]->fireLocation.Y = 12;
+                }
+                else if (i >= 18 && i < 36)
+                {
+                    g_sFire[i]->fireLocation.X = 12 + (i);
+                    g_sFire[i]->fireLocation.Y = 11;
+                }
+                else if (i >= 36 && i < 54)
+                {
+                    g_sFire[i]->fireLocation.X = -6 + (i);
                     g_sFire[i]->fireLocation.Y = 10;
+                }
+                else if (i >= 54 && i < 72)
+                {
+                    g_sFire[i]->fireLocation.X = -24 + (i);
+                    g_sFire[i]->fireLocation.Y = 9;
                 }
                 else
                 {
-                    g_sFire[i]->fireLocation.X = 27 + (i);
-                    g_sFire[i]->fireLocation.Y = 11;
+                    g_sFire[i]->fireLocation.X = -42 + (i);
+                    g_sFire[i]->fireLocation.Y = 8;
                 }
             }
-            if (g_sFire[i] != nullptr)
-            {
-                g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
-            }
         }
+        break;
     }
 }
 void processUserInput()
@@ -478,8 +485,8 @@ void render()
     }
     renderFramerate();      // renders debug information, frame rate, elapsed time, etc
     renderInputEvents();    // renders status of input events
-    renderToScreen();  
-    
+    renderToScreen();
+
 }
 
 void clearScreen()
@@ -520,8 +527,8 @@ void renderSplashScreenLevel1()  // renders the splash screen
     c.Y += 1;
     c.X = g_Console.getConsoleSize().X / 2 - 9;
     g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
-    
-   
+
+
 }
 void renderSplashScreenGameOver()
 {
@@ -547,7 +554,7 @@ void renderGame()
         clearScreen();
         renderSplashScreenGameOver();
     }
-    
+
 }
 
 void renderMap()
@@ -609,19 +616,18 @@ void renderCharacter()
         charColor = FOREGROUND_RED;
     }
     g_Console.writeToBuffer(g_sChar.m_cLocation, "P", charColor);
-   
+
 }
 
 
 void renderFire()
 {
-    for (int i = 0; i < 36; i++)
+    for (int i = 0; i < sizeof(g_sFire)/sizeof(*g_sFire); i++)
     {
         if (g_sFire[i] != nullptr)
         {
             g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
         }
-        
     }
 }
 
