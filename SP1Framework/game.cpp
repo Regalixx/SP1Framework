@@ -535,7 +535,7 @@ void renderSplashScreenGameOver()
     clearScreen();
     COORD c = g_Console.getConsoleSize();
     c.Y /= 3;
-    c.X = c.X / 2 - 5;
+    c.X = c.X / 2 - 9;
     g_Console.writeToBuffer(c, "GAME OVER YOU LOST!", 0x03);
     c.Y += 1;
     c.X = g_Console.getConsoleSize().X / 2 - 9;
@@ -722,3 +722,4 @@ void renderInputEvents()
     }
 
 }
+
