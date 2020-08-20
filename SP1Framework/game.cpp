@@ -281,7 +281,7 @@ void moveCharacter()
     if (g_skKeyEvent[K_SPACE].keyReleased)
     {
         shootBullet();
-        g_sChar.m_bActive = !g_sChar.m_bActive;
+       // g_sChar.m_bActive = !g_sChar.m_bActive;
         playerMove++;
         fireMove = TRUE;
     }
@@ -598,7 +598,16 @@ void renderCharacter()
     {
         charColor = 0x0A;
     }
+    if (LivesLeft == 3)
+    {
+        charColor = FOREGROUND_RED | FOREGROUND_GREEN;
+    }
+    if (LivesLeft == 1)
+    {
+        charColor = FOREGROUND_RED;
+    }
     g_Console.writeToBuffer(g_sChar.m_cLocation, "P", charColor);
+   
 }
 
 
