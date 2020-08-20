@@ -294,7 +294,7 @@ void moveFire()
 {
     if (fireMove)
     {
-        if (playerMove % 8 == 0)
+        if (playerMove % 20 == 0)
         {
             for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
             {
@@ -429,27 +429,27 @@ void spawnFire(int wave)
                 if (i < 18)
                 {
                     g_sFire[i]->fireLocation.X = 30 + (i);
-                    g_sFire[i]->fireLocation.Y = 12;
+                    g_sFire[i]->fireLocation.Y = 11;
                 }
                 else if (i >= 18 && i < 36)
                 {
                     g_sFire[i]->fireLocation.X = 12 + (i);
-                    g_sFire[i]->fireLocation.Y = 11;
+                    g_sFire[i]->fireLocation.Y = 10;
                 }
                 else if (i >= 36 && i < 54)
                 {
                     g_sFire[i]->fireLocation.X = -6 + (i);
-                    g_sFire[i]->fireLocation.Y = 10;
+                    g_sFire[i]->fireLocation.Y = 9;
                 }
                 else if (i >= 54 && i < 72)
                 {
                     g_sFire[i]->fireLocation.X = -24 + (i);
-                    g_sFire[i]->fireLocation.Y = 9;
+                    g_sFire[i]->fireLocation.Y = 8;
                 }
                 else
                 {
                     g_sFire[i]->fireLocation.X = -42 + (i);
-                    g_sFire[i]->fireLocation.Y = 8;
+                    g_sFire[i]->fireLocation.Y = 7;
                 }
             }
         }
@@ -622,7 +622,7 @@ void renderCharacter()
 
 void renderFire()
 {
-    for (int i = 0; i < sizeof(g_sFire)/sizeof(*g_sFire); i++)
+    for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
     {
         if (g_sFire[i] != nullptr)
         {
