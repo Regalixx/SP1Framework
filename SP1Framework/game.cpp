@@ -305,6 +305,12 @@ void moveFire()
                         delete g_sFire[i];
                         g_sFire[i] = nullptr;
                         LivesLeft = LivesLeft - 1;
+                        TutorialEnemies--;
+                        if (TutorialEnemies == 0) {
+                            g_dElapsedTime = 0;
+                            g_eGameState == S_LEVEL1;
+                        }
+
                     }
                 }
 
@@ -539,6 +545,7 @@ void renderGame()
         clearScreen();
         renderSplashScreenGameOver();
     }
+    
 }
 
 void renderMap()
@@ -603,6 +610,7 @@ void renderFire()
         {
             g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
         }
+        
     }
 }
 
