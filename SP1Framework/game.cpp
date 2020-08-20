@@ -18,6 +18,8 @@ SGameChar   g_sChar;
 SBulletChar* g_bullet[5] = {};
 SFireChar* g_sFire[100] = {};
 int TutorialEnemies = 36;
+int Level1Enemies = 90;
+int Level2Enemies = 90;
 int playerMove = 0;
 bool fireMove = false;
 int LivesLeft = 5;
@@ -113,6 +115,8 @@ void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent)
         break;
     case S_LEVEL1:
         break;
+    case S_LEVEL2:
+        break;
     }
 }
 
@@ -141,6 +145,8 @@ void mouseHandler(const MOUSE_EVENT_RECORD& mouseEvent)
     case S_GAME: gameplayMouseHandler(mouseEvent); // handle gameplay mouse event
         break;
     case S_LEVEL1:
+        break;
+    case S_LEVEL2:
         break;
     }
 }
@@ -218,12 +224,21 @@ void update(double dt)
     g_dElapsedTime += dt;
     g_dDeltaTime = dt;
 
-    if (TutorialEnemies == 0) {
+    if (TutorialEnemies == 0) { // if tutorial is cleared, go to the next Level. Level 1.
         g_eGameState = S_LEVEL1;
         spawnFire(1);
         updateGame();
         renderGame();
     }
+
+    else if (Level1Enemies == 0 && stagecounter == 2) { //Level 2
+        g_eGameState = S_LEVEL2;
+        updateGame();
+        renderGame();
+    }
+
+
+
 
     switch (g_eGameState)
     {
@@ -232,6 +247,8 @@ void update(double dt)
     case S_GAME: updateGame(); // gameplay logic when we are in the game
         break;
     case S_LEVEL1: splashScreenWait();
+        break;
+    case S_LEVEL2: splashScreenWait();
         break;
     case S_GAMEOVER: renderSplashScreenGameOver();
         break;
@@ -244,11 +261,7 @@ void splashScreenWait()    // waits for time to pass in splash screen
     if (g_dElapsedTime > 3.0) // wait for 3 seconds to switch to game mode, else do nothing
         g_eGameState = S_GAME;
 }
-void splashScreenWaitLevel1()    // waits for time to pass in splash screen
-{
-    if (g_dElapsedTime > 3.0) // wait for 3 seconds to switch to game mode, else do nothing
-        g_eGameState = S_LEVEL1;
-}
+
 
 
 
@@ -308,11 +321,26 @@ void moveFire()
                         g_sFire[i] = nullptr;
                         LivesLeft = LivesLeft - 1;
                         TutorialEnemies--;
-                        if (TutorialEnemies == 0) {
+                        if (stagecounter == 1) {
+                            Level1Enemies--;
+                        }
+                        else if (stagecounter == 2) {
+                            Level2Enemies--;
+                        }
+
+
+                        if (TutorialEnemies == 0 ) {
                             stagecounter++;
                             g_dElapsedTime = 0;
-                            g_eGameState == S_LEVEL1;
+                            g_eGameState = S_LEVEL1;
                         }
+                        else if (Level1Enemies == 0) {
+                            stagecounter++;
+                            g_dElapsedTime = 0;
+                            g_eGameState = S_LEVEL2;
+                        }
+
+
 
                     }
                 }
@@ -348,6 +376,14 @@ void renderMenuStats() {
             ss << "Lives left:", stats = "", ss << LivesLeft;
             break;
         case K_RIGHT:
+            if (stagecounter == 1) {
+                ss << "Enemies Left:", stats = "", ss << Level1Enemies;
+            }
+            else if (stagecounter == 2) {
+                ss << "Enemies Left:", stats = "", ss << Level2Enemies;
+            }
+
+            else
             ss << "Enemies Left:", stats = "", ss << TutorialEnemies;
             break;
         case K_SPACE:
@@ -366,7 +402,7 @@ void renderMenuStats() {
 
 void bulletCollision()
 {
-    for (int f = 0; f < 100; f++)
+    for (int f = 0; f < 90; f++)
     {
         for (int b = 0; b < 5; b++)
         {
@@ -377,6 +413,11 @@ void bulletCollision()
                     if (g_bullet[b]->bulletLocation.X == g_sFire[f]->fireLocation.X && g_bullet[b]->bulletLocation.Y == g_sFire[f]->fireLocation.Y)
                     {
                         TutorialEnemies--;
+                        if (stagecounter == 1) 
+                            Level1Enemies--;
+                        if (stagecounter == 2)
+                            Level2Enemies--;
+                     
                         delete g_bullet[b];
                         g_bullet[b] = nullptr;
 
@@ -384,9 +425,14 @@ void bulletCollision()
                         g_sFire[f] = nullptr;
                         Beep(1440, 30);
 
-                        if (TutorialEnemies == 0) {
+                        if (stagecounter == 0 && TutorialEnemies == 0) {
+                            g_dElapsedTime = 0; 
+                            g_eGameState = S_LEVEL1;
+                            stagecounter++;
+                        }
+                        else if (stagecounter == 1 && Level1Enemies == 0) {
                             g_dElapsedTime = 0;
-                            g_eGameState == S_LEVEL1;
+                            g_eGameState = S_LEVEL2;
                             stagecounter++;
                         }
 
@@ -463,26 +509,6 @@ void processUserInput()
         g_bQuitGame = true;
 }
 
-// Music related functions, provided by Yu Yang
-
-void Stage1Music() {
-        Beep(262, 750);
-        Beep(311, 375);
-        Beep(294, 188);
-        Beep(262, 469);
-        Beep(262, 375);
-        Beep(311, 375);
-        Beep(294, 188);
-        Beep(262, 469);
-        Beep(262, 375);
-        Beep(311, 375);
-        Beep(294, 188);
-        Beep(262, 469);
-        Beep(262, 375);
-        Beep(311, 188);
-        Beep(349, 563);
-}
-
 //--------------------------------------------------------------
 // Purpose  : Render function is to update the console screen
 //            At this point, you should know exactly what to draw onto the screen.
@@ -500,7 +526,9 @@ void render()
         break;
     case S_GAME: renderGame();
         break;
-    case S_LEVEL1: renderSplashScreenLevel1();
+    case S_LEVEL1: renderSplashScreen();
+        break;
+    case S_LEVEL2: renderSplashScreen();
         break;
     }
     renderFramerate();      // renders debug information, frame rate, elapsed time, etc
@@ -526,36 +554,32 @@ void renderSplashScreen()  // renders the splash screen
     COORD c = g_Console.getConsoleSize();
     c.Y /= 3;
     c.X = c.X / 2 - 5;
-    g_Console.writeToBuffer(c, "STAGE 1 - 0", 0x03);
+    if (stagecounter == 0) {
+        g_Console.writeToBuffer(c, "TUTORIAL STAGE", 0x03);
+    }
+    if (stagecounter == 1) {
+        g_Console.writeToBuffer(c, "STAGE 1", 0x03);
+    }
+    if (stagecounter == 2) {
+        g_Console.writeToBuffer(c, "STAGE 2", 0x03);
+    }
+    if (stagecounter == 3) {
+        g_Console.writeToBuffer(c, "STAGE 3", 0x03);
+    }
     c.Y += 1;
-    c.X = g_Console.getConsoleSize().X / 2 - 10;
-    g_Console.writeToBuffer(c, "Press <Space> to fire", 0x09);
+    c.X = g_Console.getConsoleSize().X / 2 - 25;
+    g_Console.writeToBuffer(c, "Press <Space> to fire and change character colour", 0x09);
     c.Y += 1;
     c.X = g_Console.getConsoleSize().X / 2 - 9;
     g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
 }
-void renderSplashScreenLevel1()  // renders the splash screen
-{
-    clearScreen();
-    COORD c = g_Console.getConsoleSize();
-    c.Y /= 3;
-    c.X = c.X / 2 - 6;
-    g_Console.writeToBuffer(c, "STAGE 1 - 1", 0x03);
-    c.Y += 1;
-    c.X = g_Console.getConsoleSize().X / 2 - 10;
-    g_Console.writeToBuffer(c, "Press <Space> to fire", 0x09);
-    c.Y += 1;
-    c.X = g_Console.getConsoleSize().X / 2 - 9;
-    g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
 
-
-}
 void renderSplashScreenGameOver()
 {
     clearScreen();
     COORD c = g_Console.getConsoleSize();
     c.Y /= 3;
-    c.X = c.X / 2 - 9;
+    c.X = c.X / 2 - 5;
     g_Console.writeToBuffer(c, "GAME OVER YOU LOST!", 0x03);
     c.Y += 1;
     c.X = g_Console.getConsoleSize().X / 2 - 9;
@@ -742,4 +766,3 @@ void renderInputEvents()
     }
 
 }
-
