@@ -21,6 +21,7 @@ int TutorialEnemies = 36;
 int playerMove = 0;
 bool fireMove = false;
 int LivesLeft = 5;
+int stagecounter = 0;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
 
 // Console object
@@ -219,6 +220,7 @@ void update(double dt)
 
     if (TutorialEnemies == 0) {
         g_eGameState = S_LEVEL1;
+        spawnFire(0);
         updateGame();
         renderGame();
     }
@@ -307,6 +309,7 @@ void moveFire()
                         LivesLeft = LivesLeft - 1;
                         TutorialEnemies--;
                         if (TutorialEnemies == 0) {
+                            stagecounter++;
                             g_dElapsedTime = 0;
                             g_eGameState == S_LEVEL1;
                         }
@@ -338,8 +341,6 @@ void renderMenuStats() {
     COORD startPos = { 50, 5 };
     std::ostringstream ss;
     std::string stats;
-    const int Score = 0;
-    const int Level = 1;
     for (int i = 2; i < K_COUNT; ++i)
     {
         ss.str("");
@@ -354,7 +355,7 @@ void renderMenuStats() {
         case K_SPACE:
             ss << "";
             break;
-        default:ss << "Stage:", stats = "", ss << Level;
+        default:ss << "Stage:", stats = "", ss << stagecounter;
         }
 
         ss << stats;
@@ -388,6 +389,7 @@ void bulletCollision()
                         if (TutorialEnemies == 0) {
                             g_dElapsedTime = 0;
                             g_eGameState == S_LEVEL1;
+                            stagecounter++;
                         }
                         
                         
@@ -598,7 +600,7 @@ void renderCharacter()
     {
         charColor = 0x0A;
     }
-    if (LivesLeft == 3)
+    if (LivesLeft <= 3 && LivesLeft > 1)
     {
         charColor = FOREGROUND_RED | FOREGROUND_GREEN;
     }
