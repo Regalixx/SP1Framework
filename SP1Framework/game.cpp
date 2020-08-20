@@ -463,6 +463,26 @@ void processUserInput()
         g_bQuitGame = true;
 }
 
+// Music related functions, provided by Yu Yang
+
+void Stage1Music() {
+        Beep(262, 750);
+        Beep(311, 375);
+        Beep(294, 188);
+        Beep(262, 469);
+        Beep(262, 375);
+        Beep(311, 375);
+        Beep(294, 188);
+        Beep(262, 469);
+        Beep(262, 375);
+        Beep(311, 375);
+        Beep(294, 188);
+        Beep(262, 469);
+        Beep(262, 375);
+        Beep(311, 188);
+        Beep(349, 563);
+}
+
 //--------------------------------------------------------------
 // Purpose  : Render function is to update the console screen
 //            At this point, you should know exactly what to draw onto the screen.
