@@ -40,6 +40,7 @@ enum EGAMESTATES
 {
     S_SPLASHSCREEN,
     S_LEVEL1,
+    S_LEVEL2,
     S_GAME,
     S_GAMEOVER,
     S_COUNT
@@ -69,7 +70,6 @@ void render(void);      // renders the current state of the game to the console
 void shutdown(void);      // do clean up, free memory
 
 void splashScreenWait();    // waits for time to pass in splash screen
-void splashScreenWaitLevel1();
 void updateGame();          // gameplay logic
 void moveCharacter();       // moves the character, collision detection, physics, etc
 void shootBullet();         // Shoots a bullet from player position;
@@ -79,7 +79,6 @@ void processUserInput();    // checks if you should change states or do somethin
 void clearScreen();         // clears the current screen and draw from scratch 
 void renderSplashScreen();  // renders the splash screen
 void renderGame();          // renders the game stuff
-void renderSplashScreenLevel1();
 void renderSplashScreenGameOver();
 void renderMenuStats();
 void renderMap();           // renders the map to the buffer first
