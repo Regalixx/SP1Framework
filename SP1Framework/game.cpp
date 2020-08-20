@@ -501,8 +501,8 @@ void renderSplashScreen()  // renders the splash screen
     c.X = c.X / 2 - 5;
     g_Console.writeToBuffer(c, "STAGE 1 - 0", 0x03);
     c.Y += 1;
-    c.X = g_Console.getConsoleSize().X / 2 - 25;
-    g_Console.writeToBuffer(c, "Press <Space> to fire and change character colour", 0x09);
+    c.X = g_Console.getConsoleSize().X / 2 - 10;
+    g_Console.writeToBuffer(c, "Press <Space> to fire", 0x09);
     c.Y += 1;
     c.X = g_Console.getConsoleSize().X / 2 - 9;
     g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
@@ -515,8 +515,8 @@ void renderSplashScreenLevel1()  // renders the splash screen
     c.X = c.X / 2 - 6;
     g_Console.writeToBuffer(c, "STAGE 1 - 1", 0x03);
     c.Y += 1;
-    c.X = g_Console.getConsoleSize().X / 2 - 25;
-    g_Console.writeToBuffer(c, "Press <Space> to fire and change character colour", 0x09);
+    c.X = g_Console.getConsoleSize().X / 2 - 10;
+    g_Console.writeToBuffer(c, "Press <Space> to fire", 0x09);
     c.Y += 1;
     c.X = g_Console.getConsoleSize().X / 2 - 9;
     g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
