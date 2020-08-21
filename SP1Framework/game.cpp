@@ -20,6 +20,7 @@ SFireChar* g_sFire[100] = {};
 int TutorialEnemies = 36;
 int Level1Enemies = 90;
 int Level2Enemies = 90;
+int Level3Enemies = 73;
 int playerMove = 0;
 bool AllEnemiesCleared = false;
 bool fireMove = false;
@@ -117,6 +118,8 @@ void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent)
         break;
     case S_LEVEL2:
         break;
+    case S_LEVEL3:
+        break;
     }
 }
 
@@ -147,6 +150,8 @@ void mouseHandler(const MOUSE_EVENT_RECORD& mouseEvent)
     case S_LEVEL1:
         break;
     case S_LEVEL2:
+        break;
+    case S_LEVEL3:
         break;
     }
 }
@@ -245,6 +250,19 @@ void update(double dt)
         renderGame();
     }
 
+    else if (Level2Enemies == 0 && stagecounter == 3) { //Level 2
+        g_eGameState = S_LEVEL3;
+        if (AllEnemiesCleared == true)
+        {
+            spawnFire(2);
+            AllEnemiesCleared = false;
+        }
+        updateGame();
+        renderGame();
+    }
+
+    
+
     switch (g_eGameState)
     {
     case S_SPLASHSCREEN: splashScreenWait(); // game logic for the splash screen
@@ -254,6 +272,8 @@ void update(double dt)
     case S_LEVEL1: splashScreenWait();
         break;
     case S_LEVEL2: splashScreenWait();
+        break;
+    case S_LEVEL3: splashScreenWait();
         break;
     case S_GAMEOVER: renderSplashScreenGameOver();
         break;
@@ -325,8 +345,12 @@ void moveFire()
                         else if (stagecounter == 2) {
                             Level2Enemies--;
                         }
+                        else if (stagecounter == 3) {
+                            Level3Enemies--;
+                        }
+                       
 
-                        if (TutorialEnemies == 0 ) {
+                        if (TutorialEnemies == 0) {
                             stagecounter++;
                             g_dElapsedTime = 0;
                             g_eGameState = S_LEVEL1;
@@ -335,6 +359,11 @@ void moveFire()
                             stagecounter++;
                             g_dElapsedTime = 0;
                             g_eGameState = S_LEVEL2;
+                        }
+                        else if (Level2Enemies == 0) {
+                            stagecounter++;
+                            g_dElapsedTime = 0;
+                            g_eGameState = S_LEVEL3;
                         }
                     }
                 }
@@ -376,9 +405,13 @@ void renderMenuStats() {
             else if (stagecounter == 2) {
                 ss << "Enemies Left:", stats = "", ss << Level2Enemies;
             }
+            else if (stagecounter == 3) {
+                ss << "Enemies Left:", stats = "", ss << Level3Enemies;
+            }
+
 
             else
-            ss << "Enemies Left:", stats = "", ss << TutorialEnemies;
+                ss << "Enemies Left:", stats = "", ss << TutorialEnemies;
             break;
         case K_SPACE:
             ss << "";
@@ -423,7 +456,7 @@ void bulletCollision()
                         Beep(1440, 30);
 
                         if (stagecounter == 0 && TutorialEnemies == 0) {
-                            g_dElapsedTime = 0; 
+                            g_dElapsedTime = 0;
                             g_eGameState = S_LEVEL1;
                             stagecounter++;
                             AllEnemiesCleared = true;
@@ -431,6 +464,12 @@ void bulletCollision()
                         else if (stagecounter == 1 && Level1Enemies == 0) {
                             g_dElapsedTime = 0;
                             g_eGameState = S_LEVEL2;
+                            stagecounter++;
+                            AllEnemiesCleared = true;
+                        }
+                        else if (stagecounter == 2 && Level2Enemies == 0) {
+                            g_dElapsedTime = 0;
+                            g_eGameState = S_LEVEL3;
                             stagecounter++;
                             AllEnemiesCleared = true;
                         }
@@ -562,6 +601,8 @@ void render()
     case S_LEVEL1: renderSplashScreen();
         break;
     case S_LEVEL2: renderSplashScreen();
+        break;
+    case S_LEVEL3: renderSplashScreen();
         break;
     }
     renderFramerate();      // renders debug information, frame rate, elapsed time, etc
