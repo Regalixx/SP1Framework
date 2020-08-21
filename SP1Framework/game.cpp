@@ -305,7 +305,7 @@ void moveFire()
 {
     if (fireMove)
     {
-        if (playerMove % 20 == 0)
+        if (playerMove % 28 == 0)
         {
             for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
             {
