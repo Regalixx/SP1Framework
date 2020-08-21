@@ -21,6 +21,7 @@ int TutorialEnemies = 36;
 int Level1Enemies = 90;
 int Level2Enemies = 90;
 int playerMove = 0;
+bool AllEnemiesCleared = false;
 bool fireMove = false;
 int LivesLeft = 5;
 int stagecounter = 0;
@@ -224,15 +225,24 @@ void update(double dt)
     g_dElapsedTime += dt;
     g_dDeltaTime = dt;
 
-    if (TutorialEnemies == 0 && stagecounter == 1) { // if tutorial is cleared, go to the next Level. Level 1.
+    if (TutorialEnemies == 0) { // if tutorial is cleared, go to the next Level. Level 1.
         g_eGameState = S_LEVEL1;
-        spawnFire(1);
+        if (AllEnemiesCleared == true)
+        {
+            spawnFire(1);
+            AllEnemiesCleared = false;
+        }
         updateGame();
         renderGame();
     }
 
-    if (Level1Enemies == 0 && stagecounter == 2) { //Level 2
+    else if (Level1Enemies == 0 && stagecounter == 2) { //Level 2
         g_eGameState = S_LEVEL2;
+        if (AllEnemiesCleared == true)
+        {
+            spawnFire(2);
+            AllEnemiesCleared = false;
+        }
         updateGame();
         renderGame();
     }
@@ -270,6 +280,7 @@ void updateGame()       // gameplay logic
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();
     moveFire();
+
     // moves the character, collision detection, physics, etc
                          // sound can be played here too.
 }
@@ -401,7 +412,7 @@ void renderMenuStats() {
 
 void bulletCollision()
 {
-    for (int f = 0; f < 90; f++)
+    for (int f = 0; f < 100; f++)
     {
         for (int b = 0; b < 5; b++)
         {
@@ -414,7 +425,7 @@ void bulletCollision()
                         TutorialEnemies--;
                         if (stagecounter == 1) 
                             Level1Enemies--;
-                        else if (stagecounter == 2)
+                        if (stagecounter == 2)
                             Level2Enemies--;
                      
                         delete g_bullet[b];
@@ -428,11 +439,13 @@ void bulletCollision()
                             g_dElapsedTime = 0; 
                             g_eGameState = S_LEVEL1;
                             stagecounter++;
+                            AllEnemiesCleared = true;
                         }
                         else if (stagecounter == 1 && Level1Enemies == 0) {
                             g_dElapsedTime = 0;
                             g_eGameState = S_LEVEL2;
                             stagecounter++;
+                            AllEnemiesCleared = true;
                         }
 
 
@@ -499,6 +512,39 @@ void spawnFire(int wave)
             }
         }
         break;
+    case 2:
+        for (int i = 0; i < 90; i++)
+        {
+            if (g_sFire[i] == nullptr)
+            {
+                g_sFire[i] = new SFireChar;
+                if (i < 18)
+                {
+                    g_sFire[i]->fireLocation.X = 30 + (i);
+                    g_sFire[i]->fireLocation.Y = 11;
+                }
+                else if (i >= 18 && i < 36)
+                {
+                    g_sFire[i]->fireLocation.X = 12 + (i);
+                    g_sFire[i]->fireLocation.Y = 10;
+                }
+                else if (i >= 36 && i < 54)
+                {
+                    g_sFire[i]->fireLocation.X = -6 + (i);
+                    g_sFire[i]->fireLocation.Y = 9;
+                }
+                else if (i >= 54 && i < 72)
+                {
+                    g_sFire[i]->fireLocation.X = -24 + (i);
+                    g_sFire[i]->fireLocation.Y = 8;
+                }
+                else
+                {
+                    g_sFire[i]->fireLocation.X = -42 + (i);
+                    g_sFire[i]->fireLocation.Y = 7;
+                }
+            }
+        }
     }
 }
 void processUserInput()
@@ -667,15 +713,10 @@ void renderFire()
 {
     for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
     {
-        if (g_sFire[i] != nullptr && stagecounter < 2)
+        if (g_sFire[i] != nullptr)
         {
-            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", FOREGROUND_RED | FOREGROUND_GREEN);
+            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
         }
-        if (g_sFire[i] != nullptr && stagecounter == 2)
-        {
-            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", FOREGROUND_RED);
-        }
-
     }
 }
 
