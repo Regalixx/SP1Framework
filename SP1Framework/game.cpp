@@ -224,14 +224,14 @@ void update(double dt)
     g_dElapsedTime += dt;
     g_dDeltaTime = dt;
 
-    if (TutorialEnemies == 0) { // if tutorial is cleared, go to the next Level. Level 1.
+    if (TutorialEnemies == 0 && stagecounter == 1) { // if tutorial is cleared, go to the next Level. Level 1.
         g_eGameState = S_LEVEL1;
         spawnFire(1);
         updateGame();
         renderGame();
     }
 
-    else if (Level1Enemies == 0 && stagecounter == 2) { //Level 2
+    if (Level1Enemies == 0 && stagecounter == 2) { //Level 2
         g_eGameState = S_LEVEL2;
         updateGame();
         renderGame();
@@ -270,7 +270,6 @@ void updateGame()       // gameplay logic
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();
     moveFire();
-
     // moves the character, collision detection, physics, etc
                          // sound can be played here too.
 }
@@ -415,7 +414,7 @@ void bulletCollision()
                         TutorialEnemies--;
                         if (stagecounter == 1) 
                             Level1Enemies--;
-                        if (stagecounter == 2)
+                        else if (stagecounter == 2)
                             Level2Enemies--;
                      
                         delete g_bullet[b];
@@ -668,10 +667,15 @@ void renderFire()
 {
     for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
     {
-        if (g_sFire[i] != nullptr)
+        if (g_sFire[i] != nullptr && stagecounter < 2)
         {
-            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
+            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", FOREGROUND_RED | FOREGROUND_GREEN);
         }
+        if (g_sFire[i] != nullptr && stagecounter == 2)
+        {
+            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", FOREGROUND_RED);
+        }
+
     }
 }
 
