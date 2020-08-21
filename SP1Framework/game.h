@@ -41,6 +41,7 @@ enum EGAMESTATES
     S_SPLASHSCREEN,
     S_LEVEL1,
     S_LEVEL2,
+    S_LEVEL3,
     S_GAME,
     S_GAMEOVER,
     S_COUNT
