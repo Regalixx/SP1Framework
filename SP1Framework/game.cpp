@@ -54,7 +54,6 @@ void init(void)
     g_Console.setKeyboardHandler(keyboardHandler);
     g_Console.setMouseHandler(mouseHandler);
     spawnFire(0);
-
 }
 
 //--------------------------------------------------------------
@@ -220,7 +219,6 @@ void gameplayMouseHandler(const MOUSE_EVENT_RECORD& mouseEvent)
 //--------------------------------------------------------------
 void update(double dt)
 {
-
     // get the delta time
     g_dElapsedTime += dt;
     g_dDeltaTime = dt;
@@ -247,9 +245,6 @@ void update(double dt)
         renderGame();
     }
 
-
-
-
     switch (g_eGameState)
     {
     case S_SPLASHSCREEN: splashScreenWait(); // game logic for the splash screen
@@ -272,17 +267,12 @@ void splashScreenWait()    // waits for time to pass in splash screen
         g_eGameState = S_GAME;
 }
 
-
-
-
 void updateGame()       // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
-    moveCharacter();
-    moveFire();
-
-    // moves the character, collision detection, physics, etc
-                         // sound can be played here too.
+    moveCharacter();    // moves the character, collision detection, physics, etc
+    moveFire();         // moves the enemies
+                        // sound can be played here too.
 }
 
 void moveCharacter()
@@ -310,8 +300,6 @@ void moveCharacter()
         playerMove++;
         fireMove = TRUE;
     }
-
-
 }
 void moveFire()
 {
@@ -338,7 +326,6 @@ void moveFire()
                             Level2Enemies--;
                         }
 
-
                         if (TutorialEnemies == 0 ) {
                             stagecounter++;
                             g_dElapsedTime = 0;
@@ -349,9 +336,6 @@ void moveFire()
                             g_dElapsedTime = 0;
                             g_eGameState = S_LEVEL2;
                         }
-
-
-
                     }
                 }
             }
@@ -404,7 +388,6 @@ void renderMenuStats() {
 
         ss << stats;
 
-
         COORD c = { startPos.X, startPos.Y + i };
         g_Console.writeToBuffer(c, ss.str(), FOREGROUND_GREEN);
     }
@@ -423,16 +406,20 @@ void bulletCollision()
                     if (g_bullet[b]->bulletLocation.X == g_sFire[f]->fireLocation.X && g_bullet[b]->bulletLocation.Y == g_sFire[f]->fireLocation.Y)
                     {
                         TutorialEnemies--;
-                        if (stagecounter == 1) 
-                            Level1Enemies--;
-                        if (stagecounter == 2)
-                            Level2Enemies--;
-                     
+
                         delete g_bullet[b];
                         g_bullet[b] = nullptr;
 
-                        delete g_sFire[f];
-                        g_sFire[f] = nullptr;
+                        g_sFire[f]->fireHealth--;
+                        if (g_sFire[f]->fireHealth == 0)
+                        {
+                            delete g_sFire[f];
+                            g_sFire[f] = nullptr;
+                            if (stagecounter == 1)
+                                Level1Enemies--;
+                            if (stagecounter == 2)
+                                Level2Enemies--;
+                        }
                         Beep(1440, 30);
 
                         if (stagecounter == 0 && TutorialEnemies == 0) {
@@ -447,8 +434,6 @@ void bulletCollision()
                             stagecounter++;
                             AllEnemiesCleared = true;
                         }
-
-
                     }
                 }
             }
@@ -465,6 +450,7 @@ void spawnFire(int wave)
             if (g_sFire[i] == nullptr)
             {
                 g_sFire[i] = new SFireChar;
+                g_sFire[i]->fireHealth = 1;
                 if (i < 18)
                 {
                     g_sFire[i]->fireLocation.X = 30 + (i);
@@ -484,6 +470,7 @@ void spawnFire(int wave)
             if (g_sFire[i] == nullptr)
             {
                 g_sFire[i] = new SFireChar;
+                g_sFire[i]->fireHealth = 1;
                 if (i < 18)
                 {
                     g_sFire[i]->fireLocation.X = 30 + (i);
@@ -518,6 +505,7 @@ void spawnFire(int wave)
             if (g_sFire[i] == nullptr)
             {
                 g_sFire[i] = new SFireChar;
+                g_sFire[i]->fireHealth = 2;
                 if (i < 18)
                 {
                     g_sFire[i]->fireLocation.X = 30 + (i);
@@ -579,7 +567,6 @@ void render()
     renderFramerate();      // renders debug information, frame rate, elapsed time, etc
     renderInputEvents();    // renders status of input events
     renderToScreen();
-
 }
 
 void clearScreen()
@@ -643,7 +630,6 @@ void renderGame()
         clearScreen();
         renderSplashScreenGameOver();
     }
-
 }
 
 void renderMap()
@@ -705,7 +691,6 @@ void renderCharacter()
         charColor = FOREGROUND_RED;
     }
     g_Console.writeToBuffer(g_sChar.m_cLocation, "P", charColor);
-
 }
 
 
@@ -809,5 +794,4 @@ void renderInputEvents()
     default:
         break;
     }
-
 }
