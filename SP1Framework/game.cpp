@@ -348,22 +348,43 @@ void moveFire()
                         else if (stagecounter == 3) {
                             Level3Enemies--;
                         }
-                       
+                    
 
-                        if (TutorialEnemies == 0) {
-                            stagecounter++;
+                        if (stagecounter == 0 && TutorialEnemies == 0) {
+                            if (LivesLeft <= 0) {
+                                clearScreen();
+                                renderSplashScreenGameOver();
+                                break;
+                            }
                             g_dElapsedTime = 0;
                             g_eGameState = S_LEVEL1;
-                        }
-                        else if (Level1Enemies == 0) {
                             stagecounter++;
+                            AllEnemiesCleared = true;
+
+                        }
+                        else if (stagecounter == 1 && Level1Enemies == 0) {
+                            if (LivesLeft <= 0) {
+                                clearScreen();
+                                renderSplashScreenGameOver();
+                                break;
+                            }
                             g_dElapsedTime = 0;
                             g_eGameState = S_LEVEL2;
-                        }
-                        else if (Level2Enemies == 0) {
                             stagecounter++;
+                            AllEnemiesCleared = true;
+                            
+                        }
+                        else if ( stagecounter == 2 && Level2Enemies == 0) {
+                            if (LivesLeft <= 0) {
+                                clearScreen();
+                                renderSplashScreenGameOver();
+                                break;
+                            }
                             g_dElapsedTime = 0;
                             g_eGameState = S_LEVEL3;
+                            stagecounter++;
+                            AllEnemiesCleared = true;
+                            
                         }
                     }
                 }
@@ -444,8 +465,10 @@ void bulletCollision()
                         g_bullet[b] = nullptr;
 
                         g_sFire[f]->fireHealth--;
+
                         if (g_sFire[f]->fireHealth == 0)
                         {
+         
                             delete g_sFire[f];
                             g_sFire[f] = nullptr;
                             if (stagecounter == 1)
@@ -739,7 +762,11 @@ void renderFire()
 {
     for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
     {
-        if (g_sFire[i] != nullptr)
+        if (g_sFire[i] != nullptr && stagecounter < 2)
+        {
+            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", FOREGROUND_RED|FOREGROUND_GREEN);
+        }
+        else if (g_sFire[i] != nullptr && stagecounter >= 2)
         {
             g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
         }
