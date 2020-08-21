@@ -56,6 +56,7 @@ struct SGameChar
 struct SFireChar
 {
     COORD fireLocation;
+    int fireHealth;
 };
 
 struct SBulletChar
