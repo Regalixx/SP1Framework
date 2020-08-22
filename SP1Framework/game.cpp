@@ -121,6 +121,8 @@ void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent)
         break;
     case S_LEVEL3:
         break;
+    case S_VICTORY:
+        break;
     }
 }
 
@@ -153,6 +155,8 @@ void mouseHandler(const MOUSE_EVENT_RECORD& mouseEvent)
     case S_LEVEL2:
         break;
     case S_LEVEL3:
+        break;
+    case S_VICTORY:
         break;
     }
 }
@@ -276,6 +280,8 @@ void update(double dt)
         break;
     case S_LEVEL3: splashScreenWait();
         break;
+    case S_VICTORY: renderSplashScreenGameOver();
+        break;
     case S_GAMEOVER: renderSplashScreenGameOver();
         break;
     }
@@ -324,6 +330,7 @@ void moveCharacter()
 }
 void moveFire()
 {
+    int randomizer = rand() % 2;
     if (fireMove)
     {
         if (playerMove % 28 == 0)
@@ -360,7 +367,19 @@ void moveFire()
                         else if (stagecounter == 3) {
                             Level3Enemies--;
                         }
-
+                    }
+                    
+                   /* if (randomizer == 0 && playerMove == 5) 
+                        {
+                            g_sBoss[0]->bossLocation.X - 1;
+                            g_sBoss[0]->bossLocation.Y + 0;
+                        }
+                    else if (randomizer == 1 && playerMove == 5)
+                    {
+                        g_sBoss[0]->bossLocation.X + 1;
+                        g_sBoss[0]->bossLocation.Y + 0;
+                    }*/
+                    
 
                         if (stagecounter == 0 && TutorialEnemies == 0) {
                             if (LivesLeft <= 0) {
@@ -397,8 +416,19 @@ void moveFire()
                             stagecounter++;
                             AllEnemiesCleared = true;
 
-                        }
                     }
+                        else if (stagecounter == 3 && Level3Enemies == 0) {
+                            if (LivesLeft <= 0) {
+                                clearScreen();
+                                renderSplashScreenGameOver();
+                                break;
+                            }
+                            g_dElapsedTime = 0;
+                            g_eGameState = S_LEVEL3;
+                            stagecounter++;
+                            AllEnemiesCleared = true;
+
+                        }
                 }
             }
         }
@@ -409,13 +439,13 @@ void shootBullet()
 {
     for (int i = 0; i < 5; i++)
     {
-        if (g_bullet[i] == nullptr)
-        {
-            g_bullet[i] = new SBulletChar;
-            g_bullet[i]->bulletLocation.X = g_sChar.m_cLocation.X;
-            g_bullet[i]->bulletLocation.Y = 22;
-            break;
-        }
+    if (g_bullet[i] == nullptr)
+    {
+        g_bullet[i] = new SBulletChar;
+        g_bullet[i]->bulletLocation.X = g_sChar.m_cLocation.X;
+        g_bullet[i]->bulletLocation.Y = 22;
+        break;
+    }
     }
 }
 void renderMenuStats() {
@@ -487,6 +517,8 @@ void bulletCollision()
                                 Level1Enemies--;
                             if (stagecounter == 2)
                                 Level2Enemies--;
+                            if (stagecounter == 3)
+                                Level3Enemies--;
                         }
                         Beep(1440, 30);
 
@@ -508,6 +540,12 @@ void bulletCollision()
                             stagecounter++;
                             AllEnemiesCleared = true;
                         }
+                        else if (stagecounter == 3 && Level3Enemies == 0) {
+                            g_eGameState = S_VICTORY;
+                            clearScreen();
+                            renderSplashScreenVictory();
+                            break;
+                        }
                     }
                 }
                 if (g_bullet[b] != nullptr)
@@ -526,6 +564,12 @@ void bulletCollision()
                                 delete g_sBoss[1];
                                 g_sBoss[0] = nullptr;
                                 Level3Enemies--;
+                            }
+                            if (stagecounter == 3 && Level3Enemies == 0) {
+                                g_eGameState = S_VICTORY;
+                                clearScreen();
+                                renderSplashScreenVictory();
+                                break;
                             }
                         }
                     }
@@ -754,6 +798,17 @@ void renderSplashScreenGameOver()
     g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
 
 }
+void renderSplashScreenVictory()
+{
+    clearScreen();
+    COORD c = g_Console.getConsoleSize();
+    c.Y /= 3;
+    c.X = c.X / 2 - 5;
+    g_Console.writeToBuffer(c, "GAME OVER YOU WIN!", 0x03);
+    c.Y += 1;
+    c.X = g_Console.getConsoleSize().X / 2 - 9;
+    g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
+}
 
 void renderGame()
 {
@@ -765,6 +820,10 @@ void renderGame()
     if (LivesLeft <= 0) {
         clearScreen();
         renderSplashScreenGameOver();
+    }
+    if (stagecounter == 3 && Level3Enemies == 0) {
+        clearScreen();
+        renderSplashScreenVictory();
     }
 }
 
@@ -840,14 +899,20 @@ void renderFire()
         }
         else if (g_sFire[i] != nullptr && stagecounter >= 2)
         {
-            if(g_sFire[i]->fireHealth == 2)
+            if (g_sFire[i]->fireHealth == 2)
                 g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
             else
                 g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", FOREGROUND_RED | FOREGROUND_GREEN);
         }
         else if (g_sBoss[0] != nullptr)
         {
-            g_Console.writeToBuffer(g_sBoss[0]->bossLocation, "B", 0x0C);
+            if (g_sBoss[0]->bossHealth <= 30 && g_sBoss[0]->bossHealth > 10)
+                g_Console.writeToBuffer(g_sBoss[0]->bossLocation, "B", FOREGROUND_RED | FOREGROUND_GREEN);
+            else if (g_sBoss[0]->bossHealth <= 10)
+                g_Console.writeToBuffer(g_sBoss[0]->bossLocation, "B", FOREGROUND_RED);
+            else
+            g_Console.writeToBuffer(g_sBoss[0]->bossLocation, "B", FOREGROUND_BLUE);
+    
         }
     }
 }
