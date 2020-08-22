@@ -60,6 +60,12 @@ struct SFireChar
     int fireHealth;
 };
 
+struct SBossFireChar
+{
+    COORD bossLocation;
+    int bossHealth;
+};
+
 struct SBulletChar
 {
     COORD bulletLocation;
