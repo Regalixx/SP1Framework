@@ -44,6 +44,7 @@ enum EGAMESTATES
     S_LEVEL3,
     S_GAME,
     S_GAMEOVER,
+    S_VICTORY,
     S_COUNT
 };
 
@@ -88,6 +89,7 @@ void clearScreen();         // clears the current screen and draw from scratch
 void renderSplashScreen();  // renders the splash screen
 void renderGame();          // renders the game stuff
 void renderSplashScreenGameOver();
+void renderSplashScreenVictory();
 void renderMenuStats();
 void renderMap();           // renders the map to the buffer first
 void moveFire();
