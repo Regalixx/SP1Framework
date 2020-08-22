@@ -423,10 +423,9 @@ void moveFire()
                                 renderSplashScreenGameOver();
                                 break;
                             }
-                            g_dElapsedTime = 0;
-                            g_eGameState = S_LEVEL3;
-                            stagecounter++;
-                            AllEnemiesCleared = true;
+                            clearScreen();
+                            renderSplashScreenVictory();
+                            break;
 
                         }
                 }
