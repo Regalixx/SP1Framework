@@ -17,6 +17,7 @@ SMouseEvent g_mouseEvent;
 SGameChar   g_sChar;
 SBulletChar* g_bullet[5] = {};
 SFireChar* g_sFire[100] = {};
+SBossFireChar* g_sBoss[1] = {};
 int TutorialEnemies = 36;
 int Level1Enemies = 90;
 int Level2Enemies = 90;
@@ -254,14 +255,14 @@ void update(double dt)
         g_eGameState = S_LEVEL3;
         if (AllEnemiesCleared == true)
         {
-            spawnFire(2);
+            spawnFire(3);
             AllEnemiesCleared = false;
         }
         updateGame();
         renderGame();
     }
 
-    
+
 
     switch (g_eGameState)
     {
@@ -327,6 +328,17 @@ void moveFire()
     {
         if (playerMove % 28 == 0)
         {
+            if (g_sBoss[0] != nullptr)
+            {
+                g_sBoss[0]->bossLocation.Y++;
+                if (g_sBoss[0]->bossLocation.Y > 23)
+                {
+                    delete g_sBoss[0];
+                    g_sBoss[0] = nullptr;
+                    LivesLeft = 0;
+                    Level3Enemies--;
+                }
+            }
             for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
             {
                 if (g_sFire[i] != nullptr)
@@ -348,7 +360,7 @@ void moveFire()
                         else if (stagecounter == 3) {
                             Level3Enemies--;
                         }
-                    
+
 
                         if (stagecounter == 0 && TutorialEnemies == 0) {
                             if (LivesLeft <= 0) {
@@ -372,9 +384,9 @@ void moveFire()
                             g_eGameState = S_LEVEL2;
                             stagecounter++;
                             AllEnemiesCleared = true;
-                            
+
                         }
-                        else if ( stagecounter == 2 && Level2Enemies == 0) {
+                        else if (stagecounter == 2 && Level2Enemies == 0) {
                             if (LivesLeft <= 0) {
                                 clearScreen();
                                 renderSplashScreenGameOver();
@@ -384,7 +396,7 @@ void moveFire()
                             g_eGameState = S_LEVEL3;
                             stagecounter++;
                             AllEnemiesCleared = true;
-                            
+
                         }
                     }
                 }
@@ -468,7 +480,7 @@ void bulletCollision()
 
                         if (g_sFire[f]->fireHealth == 0)
                         {
-         
+
                             delete g_sFire[f];
                             g_sFire[f] = nullptr;
                             if (stagecounter == 1)
@@ -495,6 +507,26 @@ void bulletCollision()
                             g_eGameState = S_LEVEL3;
                             stagecounter++;
                             AllEnemiesCleared = true;
+                        }
+                    }
+                }
+                if (g_bullet[b] != nullptr)
+                {
+                    if (g_sBoss[0] != nullptr)
+                    {
+                        if (g_bullet[b]->bulletLocation.X == g_sBoss[0]->bossLocation.X && g_bullet[b]->bulletLocation.Y == g_sBoss[0]->bossLocation.Y)
+                        {
+                            delete g_bullet[b];
+                            g_bullet[b] = nullptr;
+
+                            g_sBoss[0]->bossHealth--;
+                            Beep(1440, 30);
+                            if (g_sBoss[0]->bossHealth == 0)
+                            {
+                                delete g_sBoss[1];
+                                g_sBoss[0] = nullptr;
+                                Level3Enemies--;
+                            }
                         }
                     }
                 }
@@ -593,6 +625,46 @@ void spawnFire(int wave)
                     g_sFire[i]->fireLocation.X = -42 + (i);
                     g_sFire[i]->fireLocation.Y = 7;
                 }
+            }
+        }
+        break;
+    case 3:
+        for (int i = 0; i < 72; i++)
+        {
+            if (g_sFire[i] == nullptr)
+            {
+                g_sFire[i] = new SFireChar;
+                if (i < 18)
+                {
+                    g_sFire[i]->fireHealth = 1;
+                    g_sFire[i]->fireLocation.X = 30 + (i);
+                    g_sFire[i]->fireLocation.Y = 11;
+                }
+                else if (i >= 18 && i < 36)
+                {
+                    g_sFire[i]->fireHealth = 1;
+                    g_sFire[i]->fireLocation.X = 12 + (i);
+                    g_sFire[i]->fireLocation.Y = 10;
+                }
+                else if (i >= 36 && i < 54)
+                {
+                    g_sFire[i]->fireHealth = 2;
+                    g_sFire[i]->fireLocation.X = -6 + (i);
+                    g_sFire[i]->fireLocation.Y = 9;
+                }
+                else if (i >= 54 && i < 72)
+                {
+                    g_sFire[i]->fireHealth = 2;
+                    g_sFire[i]->fireLocation.X = -24 + (i);
+                    g_sFire[i]->fireLocation.Y = 8;
+                }
+            }
+            if (g_sBoss[0] == nullptr)
+            {
+                g_sBoss[0] = new SBossFireChar;
+                g_sBoss[0]->bossHealth = 50;
+                g_sBoss[0]->bossLocation.X = 40;
+                g_sBoss[0]->bossLocation.Y = 7;
             }
         }
     }
@@ -764,11 +836,18 @@ void renderFire()
     {
         if (g_sFire[i] != nullptr && stagecounter < 2)
         {
-            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", FOREGROUND_RED|FOREGROUND_GREEN);
+            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", FOREGROUND_RED | FOREGROUND_GREEN);
         }
         else if (g_sFire[i] != nullptr && stagecounter >= 2)
         {
-            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
+            if(g_sFire[i]->fireHealth == 2)
+                g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
+            else
+                g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", FOREGROUND_RED | FOREGROUND_GREEN);
+        }
+        else if (g_sBoss[0] != nullptr)
+        {
+            g_Console.writeToBuffer(g_sBoss[0]->bossLocation, "B", 0x0C);
         }
     }
 }
