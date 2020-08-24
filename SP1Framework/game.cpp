@@ -46,7 +46,7 @@ void init(void)
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
-    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+    g_sChar.m_cLocation.X = 39;
     g_sChar.m_cLocation.Y = 23;
     g_sChar.m_bActive = true;
     // sets the width, height and the font name to use in the console
@@ -237,6 +237,7 @@ void update(double dt)
         g_eGameState = S_LEVEL1;
         if (AllEnemiesCleared == true)
         {
+            resetPlayer();
             spawnFire(1);
             AllEnemiesCleared = false;
         }
@@ -248,6 +249,7 @@ void update(double dt)
         g_eGameState = S_LEVEL2;
         if (AllEnemiesCleared == true)
         {
+            resetPlayer();
             spawnFire(2);
             AllEnemiesCleared = false;
         }
@@ -259,14 +261,13 @@ void update(double dt)
         g_eGameState = S_LEVEL3;
         if (AllEnemiesCleared == true)
         {
+            resetPlayer();
             spawnFire(3);
             AllEnemiesCleared = false;
         }
         updateGame();
         renderGame();
     }
-
-
 
     switch (g_eGameState)
     {
@@ -286,7 +287,6 @@ void update(double dt)
         break;
     }
 }
-
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
@@ -333,6 +333,13 @@ void moveFire()
     int randomizer = rand() % 2;
     if (fireMove)
     {
+        if (g_sBoss[0] != nullptr)
+        {
+            if (randomizer == 0 && playerMove % 5 == 0 && g_sBoss[0]->bossLocation.X < 47)
+                g_sBoss[0]->bossLocation.X++;
+            else if (randomizer == 1 && playerMove % 5 == 0 && g_sBoss[0]->bossLocation.X > 30)
+                g_sBoss[0]->bossLocation.X--;
+        }
         if (playerMove % 28 == 0)
         {
             if (g_sBoss[0] != nullptr)
@@ -368,66 +375,53 @@ void moveFire()
                             Level3Enemies--;
                         }
                     }
-                    
-                   /* if (randomizer == 0 && playerMove == 5) 
-                        {
-                            g_sBoss[0]->bossLocation.X - 1;
-                            g_sBoss[0]->bossLocation.Y + 0;
+                    if (stagecounter == 0 && TutorialEnemies == 0) {
+                        if (LivesLeft <= 0) {
+                            clearScreen();
+                            renderSplashScreenGameOver();
+                            break;
                         }
-                    else if (randomizer == 1 && playerMove == 5)
-                    {
-                        g_sBoss[0]->bossLocation.X + 1;
-                        g_sBoss[0]->bossLocation.Y + 0;
-                    }*/
-                    
-
-                        if (stagecounter == 0 && TutorialEnemies == 0) {
-                            if (LivesLeft <= 0) {
-                                clearScreen();
-                                renderSplashScreenGameOver();
-                                break;
-                            }
-                            g_dElapsedTime = 0;
-                            g_eGameState = S_LEVEL1;
-                            stagecounter++;
-                            AllEnemiesCleared = true;
-
-                        }
-                        else if (stagecounter == 1 && Level1Enemies == 0) {
-                            if (LivesLeft <= 0) {
-                                clearScreen();
-                                renderSplashScreenGameOver();
-                                break;
-                            }
-                            g_dElapsedTime = 0;
-                            g_eGameState = S_LEVEL2;
-                            stagecounter++;
-                            AllEnemiesCleared = true;
-
-                        }
-                        else if (stagecounter == 2 && Level2Enemies == 0) {
-                            if (LivesLeft <= 0) {
-                                clearScreen();
-                                renderSplashScreenGameOver();
-                                break;
-                            }
-                            g_dElapsedTime = 0;
-                            g_eGameState = S_LEVEL3;
-                            stagecounter++;
-                            AllEnemiesCleared = true;
+                        g_dElapsedTime = 0;
+                        g_eGameState = S_LEVEL1;
+                        stagecounter++;
+                        AllEnemiesCleared = true;
 
                     }
-                        else if (stagecounter == 3 && Level3Enemies == 0) {
-                            if (LivesLeft <= 0) {
-                                clearScreen();
-                                renderSplashScreenGameOver();
-                                break;
-                            }
+                    else if (stagecounter == 1 && Level1Enemies == 0) {
+                        if (LivesLeft <= 0) {
                             clearScreen();
-                            renderSplashScreenVictory();
+                            renderSplashScreenGameOver();
                             break;
-
                         }
+                        g_dElapsedTime = 0;
+                        g_eGameState = S_LEVEL2;
+                        stagecounter++;
+                        AllEnemiesCleared = true;
+
+                    }
+                    else if (stagecounter == 2 && Level2Enemies == 0) {
+                        if (LivesLeft <= 0) {
+                            clearScreen();
+                            renderSplashScreenGameOver();
+                            break;
+                        }
+                        g_dElapsedTime = 0;
+                        g_eGameState = S_LEVEL3;
+                        stagecounter++;
+                        AllEnemiesCleared = true;
+
+                    }
+                    else if (stagecounter == 3 && Level3Enemies == 0) {
+                        if (LivesLeft <= 0) {
+                            clearScreen();
+                            renderSplashScreenGameOver();
+                            break;
+                        }
+                        clearScreen();
+                        renderSplashScreenVictory();
+                        break;
+
+                    }
                 }
             }
         }
@@ -438,13 +432,13 @@ void shootBullet()
 {
     for (int i = 0; i < 5; i++)
     {
-    if (g_bullet[i] == nullptr)
-    {
-        g_bullet[i] = new SBulletChar;
-        g_bullet[i]->bulletLocation.X = g_sChar.m_cLocation.X;
-        g_bullet[i]->bulletLocation.Y = 22;
-        break;
-    }
+        if (g_bullet[i] == nullptr)
+        {
+            g_bullet[i] = new SBulletChar;
+            g_bullet[i]->bulletLocation.X = g_sChar.m_cLocation.X;
+            g_bullet[i]->bulletLocation.Y = 22;
+            break;
+        }
     }
 }
 void renderMenuStats() {
@@ -470,8 +464,6 @@ void renderMenuStats() {
             else if (stagecounter == 3) {
                 ss << "Enemies Left:", stats = "", ss << Level3Enemies;
             }
-
-
             else
                 ss << "Enemies Left:", stats = "", ss << TutorialEnemies;
             break;
@@ -509,7 +501,6 @@ void bulletCollision()
 
                         if (g_sFire[f]->fireHealth == 0)
                         {
-
                             delete g_sFire[f];
                             g_sFire[f] = nullptr;
                             if (stagecounter == 1)
@@ -712,6 +703,16 @@ void spawnFire(int wave)
         }
     }
 }
+void resetPlayer()
+{
+    for (int i = 0; i < 5; i++)
+    {
+        delete g_bullet[i];
+        g_bullet[i] = nullptr;
+    }
+    g_sChar.m_cLocation.X = 39;
+    playerMove = 0;
+}
 void processUserInput()
 {
     // quits the game if player hits the escape key
@@ -855,7 +856,6 @@ void renderBullet()
                 {
                     delete g_bullet[i];
                     g_bullet[i] = nullptr;
-                    //Beep(100, 100);
                 }
             }
             else
@@ -871,11 +871,7 @@ void renderBullet()
 void renderCharacter()
 {
     // Draw the location of the character
-    WORD charColor = 0x0C;
-    if (g_sChar.m_bActive)
-    {
-        charColor = 0x0A;
-    }
+    WORD charColor = 0x0A;
     if (LivesLeft <= 3 && LivesLeft > 1)
     {
         charColor = FOREGROUND_RED | FOREGROUND_GREEN;
@@ -892,11 +888,7 @@ void renderFire()
 {
     for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
     {
-        if (g_sFire[i] != nullptr && stagecounter < 2)
-        {
-            g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", FOREGROUND_RED | FOREGROUND_GREEN);
-        }
-        else if (g_sFire[i] != nullptr && stagecounter >= 2)
+        if (g_sFire[i] != nullptr)
         {
             if (g_sFire[i]->fireHealth == 2)
                 g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
@@ -910,8 +902,7 @@ void renderFire()
             else if (g_sBoss[0]->bossHealth <= 10)
                 g_Console.writeToBuffer(g_sBoss[0]->bossLocation, "B", FOREGROUND_RED);
             else
-            g_Console.writeToBuffer(g_sBoss[0]->bossLocation, "B", FOREGROUND_BLUE);
-    
+                g_Console.writeToBuffer(g_sBoss[0]->bossLocation, "B", FOREGROUND_BLUE);
         }
     }
 }
@@ -955,54 +946,8 @@ void renderInputEvents()
             break;
         default: key = "SPACE TO SHOOT";
         }
-        if (g_skKeyEvent[i].keyDown)
-            ss << key << "pressed";
-        else if (g_skKeyEvent[i].keyReleased)
-            ss << key << " released";
-        else
-            ss << key;
-
 
         COORD c = { startPos.X, startPos.Y + i };
         g_Console.writeToBuffer(c, ss.str(), FOREGROUND_RED);
-    }
-
-    // mouse events    
-    ss.str("");
-    ss << "Mouse position (" << g_mouseEvent.mousePosition.X << ", " << g_mouseEvent.mousePosition.Y << ")";
-    g_Console.writeToBuffer(g_mouseEvent.mousePosition, ss.str(), 0x59);
-    ss.str("");
-    switch (g_mouseEvent.eventFlags)
-    {
-    case 0:
-        if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED)
-        {
-            ss.str("Left Button Pressed");
-            g_Console.writeToBuffer(g_mouseEvent.mousePosition.X, g_mouseEvent.mousePosition.Y + 1, ss.str(), 0x59);
-        }
-        else if (g_mouseEvent.buttonState == RIGHTMOST_BUTTON_PRESSED)
-        {
-            ss.str("Right Button Pressed");
-            g_Console.writeToBuffer(g_mouseEvent.mousePosition.X, g_mouseEvent.mousePosition.Y + 2, ss.str(), 0x59);
-        }
-        else
-        {
-            ss.str("Some Button Pressed");
-            g_Console.writeToBuffer(g_mouseEvent.mousePosition.X, g_mouseEvent.mousePosition.Y + 3, ss.str(), 0x59);
-        }
-        break;
-    case DOUBLE_CLICK:
-        ss.str("Double Clicked");
-        g_Console.writeToBuffer(g_mouseEvent.mousePosition.X, g_mouseEvent.mousePosition.Y + 4, ss.str(), 0x59);
-        break;
-    case MOUSE_WHEELED:
-        if (g_mouseEvent.buttonState & 0xFF000000)
-            ss.str("Mouse wheeled down");
-        else
-            ss.str("Mouse wheeled up");
-        g_Console.writeToBuffer(g_mouseEvent.mousePosition.X, g_mouseEvent.mousePosition.Y + 5, ss.str(), 0x59);
-        break;
-    default:
-        break;
     }
 }
