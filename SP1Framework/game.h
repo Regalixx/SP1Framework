@@ -83,7 +83,8 @@ void updateGame();          // gameplay logic
 void moveCharacter();       // moves the character, collision detection, physics, etc
 void shootBullet();         // Shoots a bullet from player position;
 void bulletCollision();     // Detects if a bullet has collided with the fire
-void spawnFire(int wave);           // Spawns fire
+void spawnFire(int wave);   // Spawns fire
+void resetPlayer();
 void processUserInput();    // checks if you should change states or do something else with the game, e.g. pause, exit
 void clearScreen();         // clears the current screen and draw from scratch 
 void renderSplashScreen();  // renders the splash screen
@@ -106,6 +107,5 @@ void mouseHandler(const MOUSE_EVENT_RECORD& mouseEvent);      // define this fun
 
 void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent);   // handles keyboard events for gameplay 
 void gameplayMouseHandler(const MOUSE_EVENT_RECORD& mouseEvent); // handles mouse events for gameplay 
-
 
 #endif // _GAME_H
