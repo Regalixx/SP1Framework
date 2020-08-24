@@ -6,7 +6,9 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <fstream>
 
+std::string getFileContents(std::ifstream&);
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 SKeyEvent g_skKeyEvent[K_COUNT];
@@ -22,6 +24,7 @@ int TutorialEnemies = 36;
 int Level1Enemies = 90;
 int Level2Enemies = 90;
 int Level3Enemies = 73;
+int bossHealthCounter = 50;
 int playerMove = 0;
 bool AllEnemiesCleared = false;
 bool fireMove = false;
@@ -237,6 +240,7 @@ void update(double dt)
         g_eGameState = S_LEVEL1;
         if (AllEnemiesCleared == true)
         {
+            
             resetPlayer();
             spawnFire(1);
             AllEnemiesCleared = false;
@@ -249,6 +253,7 @@ void update(double dt)
         g_eGameState = S_LEVEL2;
         if (AllEnemiesCleared == true)
         {
+            
             resetPlayer();
             spawnFire(2);
             AllEnemiesCleared = false;
@@ -296,6 +301,7 @@ void splashScreenWait()    // waits for time to pass in splash screen
 
 void updateGame()       // gameplay logic
 {
+
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
     moveFire();         // moves the enemies
@@ -350,7 +356,6 @@ void moveFire()
                     delete g_sBoss[0];
                     g_sBoss[0] = nullptr;
                     LivesLeft = 0;
-                    Level3Enemies--;
                 }
             }
             for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
@@ -442,7 +447,7 @@ void shootBullet()
     }
 }
 void renderMenuStats() {
-
+ 
     COORD startPos = { 50, 5 };
     std::ostringstream ss;
     std::string stats;
@@ -468,9 +473,11 @@ void renderMenuStats() {
                 ss << "Enemies Left:", stats = "", ss << TutorialEnemies;
             break;
         case K_SPACE:
-            ss << "";
+            if (stagecounter == 3)
+            ss << "Boss Health:", stats = "", ss << bossHealthCounter;
             break;
         default:ss << "Stage:", stats = "", ss << stagecounter;
+            break;
         }
 
         ss << stats;
@@ -548,6 +555,7 @@ void bulletCollision()
                             g_bullet[b] = nullptr;
 
                             g_sBoss[0]->bossHealth--;
+                            bossHealthCounter--;
                             Beep(1440, 30);
                             if (g_sBoss[0]->bossHealth == 0)
                             {
@@ -745,7 +753,6 @@ void render()
         break;
     }
     renderFramerate();      // renders debug information, frame rate, elapsed time, etc
-    renderInputEvents();    // renders status of input events
     renderToScreen();
 }
 
@@ -812,6 +819,7 @@ void renderSplashScreenVictory()
 
 void renderGame()
 {
+    renderInputEvents();
     renderMap();        // renders the map to the buffer first
     renderFire();
     renderBullet();     // renders the bullets into the buffer
@@ -926,6 +934,7 @@ void renderFramerate()
     g_Console.writeToBuffer(c, ss.str(), 0x59);
 }
 
+
 // this is an example of how you would use the input events
 void renderInputEvents()
 {
@@ -946,7 +955,8 @@ void renderInputEvents()
             break;
         default: key = "SPACE TO SHOOT";
         }
-
+        ss << key;
+        
         COORD c = { startPos.X, startPos.Y + i };
         g_Console.writeToBuffer(c, ss.str(), FOREGROUND_RED);
     }
