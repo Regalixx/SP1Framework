@@ -772,6 +772,8 @@ void renderMisc()
 {
     COORD bs1 = g_Console.getConsoleSize();
     COORD bs2 = g_Console.getConsoleSize();
+    COORD bs3 = g_Console.getConsoleSize();
+    COORD bs4 = g_Console.getConsoleSize();
 
 
     bs1.Y = 0;
@@ -798,6 +800,51 @@ void renderMisc()
         bs2.X++;
     }
 
+    bs3.Y = 12;
+    bs3.X = 49;
+
+    g_Console.writeToBuffer(bs3, "               ,@@@@@@@,", 0x03);
+    bs3.Y++;
+    g_Console.writeToBuffer(bs3, "       ,,,.   ,@@@@@@/@@,  ", 0x03);
+    bs3.Y++;
+    g_Console.writeToBuffer(bs3, "    ,&%%&%&&%,@@@@@/@@@@@@,", 0x03);
+    bs3.Y++;
+    g_Console.writeToBuffer(bs3, "   ,%&\%&&%&&%,@@@\@@@/@@@", 0x03);
+    bs3.Y++;
+    g_Console.writeToBuffer(bs3, "   %&&%&%&/%&&%@@\@@/ /@@@", 0x03);
+    bs3.Y++;
+    g_Console.writeToBuffer(bs3, "   %&&%/ %&%%&&@@\ V /@@' ", 0x03);
+    bs3.Y++;
+    g_Console.writeToBuffer(bs3, "   `&%\ ` /%&'    |.|        '", 0x03);
+    bs3.Y++;
+    g_Console.writeToBuffer(bs3, "       |o|        | |         ", 0x03);
+    bs3.Y++;
+    g_Console.writeToBuffer(bs3, "       |.|        | |         ", 0x03);
+    bs3.Y++;
+    g_Console.writeToBuffer(bs3, "    \\/ ._\//_/__/  ,\_//__\\", 0x03);
+
+    bs4.Y = 12;
+    bs4.X = 0;
+
+    g_Console.writeToBuffer(bs4, "               ,@@@@@@@,", 0x03);
+    bs4.Y++;
+    g_Console.writeToBuffer(bs4, "       ,,,.   ,@@@@@@/@@,  ", 0x03);
+    bs4.Y++;
+    g_Console.writeToBuffer(bs4, "    ,&%%&%&&%,@@@@@/@@@@@@,", 0x03);
+    bs4.Y++;
+    g_Console.writeToBuffer(bs4, "   ,%&\%&&%&&%,@@@\@@@/@@@", 0x03);
+    bs4.Y++;
+    g_Console.writeToBuffer(bs4, "   %&&%&%&/%&&%@@\@@/ /@@@", 0x03);
+    bs4.Y++;
+    g_Console.writeToBuffer(bs4, "   %&&%/ %&%%&&@@\ V /@@' ", 0x03);
+    bs4.Y++;
+    g_Console.writeToBuffer(bs4, "   `&%\ ` /%&'    |.|        '", 0x03);
+    bs4.Y++;
+    g_Console.writeToBuffer(bs4, "       |o|        | |         ", 0x03);
+    bs4.Y++;
+    g_Console.writeToBuffer(bs4, "       |.|        | |         ", 0x03);
+    bs4.Y++;
+    g_Console.writeToBuffer(bs4, "    \\/ ._\//_/__/  ,\_//__\\", 0x03);
 }
 
 void renderSplashScreen()  // renders the splash screen
