@@ -82,7 +82,9 @@ void splashScreenWait();    // waits for time to pass in splash screen
 void updateGame();          // gameplay logic
 void moveCharacter();       // moves the character, collision detection, physics, etc
 void shootBullet();         // Shoots a bullet from player position;
+void enemyShoot(int x, int y);
 void bulletCollision();     // Detects if a bullet has collided with the fire
+void enemyBulletCollision();
 void spawnFire(int wave);   // Spawns fire
 void resetPlayer();
 void processUserInput();    // checks if you should change states or do something else with the game, e.g. pause, exit
@@ -94,6 +96,7 @@ void renderSplashScreenVictory();
 void renderMenuStats();
 void renderMap();           // renders the map to the buffer first
 void moveFire();
+void renderEnemyBullet();
 void renderBullet();        // renders the bullet
 void renderCharacter();     // renders the character into the buffer
 void renderFire();
