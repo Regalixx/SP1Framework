@@ -18,16 +18,18 @@ SMouseEvent g_mouseEvent;
 // Game specific variables here
 SGameChar   g_sChar;
 SBulletChar* g_bullet[5] = {};
+SBulletChar* g_enemyBullet[25] = {};
 SFireChar* g_sFire[100] = {};
 SBossFireChar* g_sBoss[1] = {};
 int TutorialEnemies = 36;
 int Level1Enemies = 90;
-int Level2Enemies = 90;
+int Level2Enemies = 10;
 int Level3Enemies = 73;
 int bossHealthCounter = 50;
 int playerMove = 0;
 bool AllEnemiesCleared = false;
 bool fireMove = false;
+bool enemyBulletMove = false;
 int LivesLeft = 5;
 int stagecounter = 0;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
@@ -318,6 +320,7 @@ void moveCharacter()
         g_sChar.m_cLocation.X--;
         playerMove++;
         fireMove = TRUE;
+        enemyBulletMove = TRUE;
     }
     if (g_skKeyEvent[K_RIGHT].keyReleased && g_sChar.m_cLocation.X < 47)
     {
@@ -325,6 +328,7 @@ void moveCharacter()
         g_sChar.m_cLocation.X++;
         playerMove++;
         fireMove = TRUE;
+        enemyBulletMove = TRUE;
     }
     if (g_skKeyEvent[K_SPACE].keyReleased)
     {
@@ -332,6 +336,7 @@ void moveCharacter()
         // g_sChar.m_bActive = !g_sChar.m_bActive;
         playerMove++;
         fireMove = TRUE;
+        enemyBulletMove = TRUE;
     }
 }
 void moveFire()
@@ -341,10 +346,31 @@ void moveFire()
     {
         if (g_sBoss[0] != nullptr)
         {
-            if (randomizer == 0 && playerMove % 5 == 0 && g_sBoss[0]->bossLocation.X < 47)
+            if (randomizer == 0 && playerMove % 6 == 0 && g_sBoss[0]->bossLocation.X < 47)
                 g_sBoss[0]->bossLocation.X++;
-            else if (randomizer == 1 && playerMove % 5 == 0 && g_sBoss[0]->bossLocation.X > 30)
+            else if (randomizer == 1 && playerMove % 6 == 0 && g_sBoss[0]->bossLocation.X > 30)
                 g_sBoss[0]->bossLocation.X--;
+        }
+        if (stagecounter == 2)
+        {
+            for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
+            {
+                if (g_sFire[i] != nullptr)
+                {
+                    int chanceToFire = rand() % 3;
+                    if (playerMove % 7 == 0)
+                    {
+                        if (chanceToFire == 2)
+                        {
+                            enemyShoot(g_sFire[i]->fireLocation.X, g_sFire[i]->fireLocation.Y);
+                        }
+                    }
+                    if (randomizer == 0 && playerMove % 5 == 0 && g_sFire[i]->fireLocation.X < 47)
+                        g_sFire[i]->fireLocation.X++;
+                    else if (randomizer == 1 && playerMove % 5 == 0 && g_sFire[i]->fireLocation.X > 30)
+                        g_sFire[i]->fireLocation.X--;
+                }
+            }
         }
         if (playerMove % 28 == 0)
         {
@@ -433,6 +459,30 @@ void moveFire()
         fireMove = false;
     }
 }
+void renderEnemyBullet()
+{
+    for (int i = 0; i < 25; i++)
+    {
+        if (g_enemyBullet[i] != nullptr)
+        {
+            g_Console.writeToBuffer(g_enemyBullet[i]->bulletLocation, "Û", 0x0A);
+            if (g_enemyBullet[i]->bulletLocation.Y == 23)
+            {
+                if (g_enemyBullet[i] != nullptr)
+                {
+                    delete g_enemyBullet[i];
+                    g_enemyBullet[i] = nullptr;
+                }
+            }
+            else if (enemyBulletMove)
+            {
+                g_enemyBullet[i]->bulletLocation.Y += 1;
+            }
+            enemyBulletCollision();
+        }
+    }
+    enemyBulletMove = false;
+}
 void shootBullet()
 {
     for (int i = 0; i < 5; i++)
@@ -442,6 +492,19 @@ void shootBullet()
             g_bullet[i] = new SBulletChar;
             g_bullet[i]->bulletLocation.X = g_sChar.m_cLocation.X;
             g_bullet[i]->bulletLocation.Y = 22;
+            break;
+        }
+    }
+}
+void enemyShoot(int x, int y)
+{
+    for (int i = 0; i < 25; i++)
+    {
+        if (g_enemyBullet[i] == nullptr)
+        {
+            g_enemyBullet[i] = new SBulletChar;
+            g_enemyBullet[i]->bulletLocation.X = x;
+            g_enemyBullet[i]->bulletLocation.Y = y;
             break;
         }
     }
@@ -576,6 +639,22 @@ void bulletCollision()
         }
     }
 }
+void enemyBulletCollision()
+{
+    for (int i = 0; i < 25; i++)
+    {
+        if (g_enemyBullet[i] != nullptr)
+        {
+            if (g_enemyBullet[i]->bulletLocation.X == g_sChar.m_cLocation.X && g_enemyBullet[i]->bulletLocation.Y == g_sChar.m_cLocation.Y)
+            {
+                delete g_enemyBullet[i];
+                g_enemyBullet[i] = nullptr;
+                LivesLeft -= 1;
+                Beep(450, 30);
+            }
+        }
+    }
+}
 void spawnFire(int wave)
 {
     switch (wave)
@@ -636,12 +715,15 @@ void spawnFire(int wave)
         }
         break;
     case 2:
-        for (int i = 0; i < 90; i++)
+        for (int i = 0; i < 10; i++)
         {
             if (g_sFire[i] == nullptr)
             {
                 g_sFire[i] = new SFireChar;
                 g_sFire[i]->fireHealth = 2;
+                g_sFire[i]->fireLocation.X = 35 + (i);
+                g_sFire[i]->fireLocation.Y = 9;
+                /*
                 if (i < 18)
                 {
                     g_sFire[i]->fireLocation.X = 30 + (i);
@@ -667,6 +749,7 @@ void spawnFire(int wave)
                     g_sFire[i]->fireLocation.X = -42 + (i);
                     g_sFire[i]->fireLocation.Y = 7;
                 }
+                */
             }
         }
         break;
@@ -717,6 +800,11 @@ void resetPlayer()
     {
         delete g_bullet[i];
         g_bullet[i] = nullptr;
+    }
+    for (int g = 0; g < 25; g++)
+    {
+        delete g_enemyBullet[g];
+        g_enemyBullet[g] = nullptr;
     }
     g_sChar.m_cLocation.X = 39;
     playerMove = 0;
@@ -851,14 +939,14 @@ void renderSplashScreen()  // renders the splash screen
 {
     renderMisc();
     COORD c = g_Console.getConsoleSize();
-    
+
     c.Y /= 3;
     c.X = c.X / 2 - 5;
-    
+
     if (stagecounter == 0) {
-       
+
         g_Console.writeToBuffer(c, "TUTORIAL STAGE", 0x03);
-        
+
     }
     if (stagecounter == 1) {
         g_Console.writeToBuffer(c, "STAGE 1", 0x03);
@@ -907,6 +995,7 @@ void renderGame()
     renderMap();        // renders the map to the buffer first
     renderFire();
     renderBullet();     // renders the bullets into the buffer
+    renderEnemyBullet();
     renderCharacter();
     renderMenuStats();// renders the character into the buffer
     if (LivesLeft <= 0) {
@@ -923,19 +1012,36 @@ void renderMap()
 {
     renderMisc();
 
+    /*
+    // Set up sample colours, and output shadings
+    const WORD colors[] = {
+        0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F,
+        0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6
+    };
+
+    COORD c;
+    for (int i = 0; i < 12; ++i)
+    {
+        c.X = 5 * i;
+        c.Y = i + 1;
+        colour(colors[i]);
+        g_Console.writeToBuffer(c, " °±²Û", colors[i]);
+    }
+    */
+
     COORD Map = g_Console.getConsoleSize();
     Map.Y /= 4;
     Map.X = Map.X / 2 - 11;
-    g_Console.writeToBuffer(Map, "xxxxxxxxxxxxxxxxxxxx", 0x03);
+    g_Console.writeToBuffer(Map, "ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ", 0x03);
     for (int i = 0; i < 17; i++)
     {
         Map.Y += 1;
         Map.X = g_Console.getConsoleSize().X / 2 - 11;
-        g_Console.writeToBuffer(Map, "x                  x", 0x09);
+        g_Console.writeToBuffer(Map, "Û                  Û", 0x09);
     }
     Map.Y += 1;
     Map.X = g_Console.getConsoleSize().X / 2 - 11;
-    g_Console.writeToBuffer(Map, "xxxxxxxxxxxxxxxxxxxx", 0x03);
+    g_Console.writeToBuffer(Map, "ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ", 0x03);
 }
 
 void renderBullet()
