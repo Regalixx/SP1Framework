@@ -996,7 +996,7 @@ void renderFire()
             else if (g_sBoss[0]->bossHealth <= 10)
                 g_Console.writeToBuffer(g_sBoss[0]->bossLocation, "B", FOREGROUND_RED);
             else
-                g_Console.writeToBuffer(g_sBoss[0]->bossLocation, "B", FOREGROUND_BLUE);
+                g_Console.writeToBuffer(g_sBoss[0]->bossLocation, "B", 0x0D);
         }
     }
 }
