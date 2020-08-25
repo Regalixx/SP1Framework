@@ -240,7 +240,7 @@ void update(double dt)
         g_eGameState = S_LEVEL1;
         if (AllEnemiesCleared == true)
         {
-            
+
             resetPlayer();
             spawnFire(1);
             AllEnemiesCleared = false;
@@ -253,7 +253,7 @@ void update(double dt)
         g_eGameState = S_LEVEL2;
         if (AllEnemiesCleared == true)
         {
-            
+
             resetPlayer();
             spawnFire(2);
             AllEnemiesCleared = false;
@@ -295,7 +295,7 @@ void update(double dt)
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
-    if (g_dElapsedTime > 3.0) // wait for 3 seconds to switch to game mode, else do nothing
+    if (g_dElapsedTime > 6.0) // wait for 3 seconds to switch to game mode, else do nothing
         g_eGameState = S_GAME;
 }
 
@@ -447,7 +447,7 @@ void shootBullet()
     }
 }
 void renderMenuStats() {
- 
+
     COORD startPos = { 50, 5 };
     std::ostringstream ss;
     std::string stats;
@@ -474,7 +474,7 @@ void renderMenuStats() {
             break;
         case K_SPACE:
             if (stagecounter == 3)
-            ss << "Boss Health:", stats = "", ss << bossHealthCounter;
+                ss << "Boss Health:", stats = "", ss << bossHealthCounter;
             break;
         default:ss << "Stage:", stats = "", ss << stagecounter;
             break;
@@ -768,13 +768,38 @@ void renderToScreen()
     g_Console.flushBufferToConsole();
 }
 
+void renderName()
+{
+    COORD bs1 = g_Console.getConsoleSize();
+
+    bs1.Y = 0;
+    bs1.X = 5;
+
+    g_Console.writeToBuffer(bs1, "  ____  _            _       _____                                     ", 0x03);
+    bs1.Y++;
+    g_Console.writeToBuffer(bs1, " |  _ || |          | |     / ____|                                    ", 0x03);
+    bs1.Y++;
+    g_Console.writeToBuffer(bs1, " | |_) | | __ _  ___| | __ | (___  _   _ _ __ ___  _ __ ___   ___ _ __ ", 0x03);
+    bs1.Y++;
+    g_Console.writeToBuffer(bs1, " |  _ <| |/ _` |/ __| |/ /  |___ || | | | '_ ` _ || '_ ` _ | / _ | '__|", 0x03);
+    bs1.Y++;
+    g_Console.writeToBuffer(bs1, " | |_) | | (_| | (__|   <   ____) | |_| | | | | | | | | | | |  __/ |   ", 0x03);
+    bs1.Y++;
+    g_Console.writeToBuffer(bs1, " |____/|_||__,_||___|_||_| |_____/ |__,_|_| |_| |_|_| |_| |_||___|_|   ", 0x03);
+}
+
 void renderSplashScreen()  // renders the splash screen
 {
+    renderName();
     COORD c = g_Console.getConsoleSize();
+    
     c.Y /= 3;
     c.X = c.X / 2 - 5;
+    
     if (stagecounter == 0) {
+       
         g_Console.writeToBuffer(c, "TUTORIAL STAGE", 0x03);
+        
     }
     if (stagecounter == 1) {
         g_Console.writeToBuffer(c, "STAGE 1", 0x03);
@@ -837,6 +862,8 @@ void renderGame()
 
 void renderMap()
 {
+    renderName();
+
     COORD Map = g_Console.getConsoleSize();
     Map.Y /= 4;
     Map.X = Map.X / 2 - 11;
@@ -956,7 +983,7 @@ void renderInputEvents()
         default: key = "SPACE TO SHOOT";
         }
         ss << key;
-        
+
         COORD c = { startPos.X, startPos.Y + i };
         g_Console.writeToBuffer(c, ss.str(), FOREGROUND_RED);
     }
