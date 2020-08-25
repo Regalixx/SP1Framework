@@ -768,9 +768,11 @@ void renderToScreen()
     g_Console.flushBufferToConsole();
 }
 
-void renderName()
+void renderMisc()
 {
     COORD bs1 = g_Console.getConsoleSize();
+    COORD bs2 = g_Console.getConsoleSize();
+
 
     bs1.Y = 0;
     bs1.X = 5;
@@ -786,11 +788,21 @@ void renderName()
     g_Console.writeToBuffer(bs1, " | |_) | | (_| | (__|   <   ____) | |_| | | | | | | | | | | |  __/ |   ", 0x03);
     bs1.Y++;
     g_Console.writeToBuffer(bs1, " |____/|_||__,_||___|_||_| |_____/ |__,_|_| |_| |_|_| |_| |_||___|_|   ", 0x03);
+
+    bs2.Y = 10;
+    bs2.X = 0;
+
+    for (int i = 0; i <= 79; i++)
+    {
+        g_Console.writeToBuffer(bs2, "_", 0x03);
+        bs2.X++;
+    }
+
 }
 
 void renderSplashScreen()  // renders the splash screen
 {
-    renderName();
+    renderMisc();
     COORD c = g_Console.getConsoleSize();
     
     c.Y /= 3;
@@ -862,7 +874,7 @@ void renderGame()
 
 void renderMap()
 {
-    renderName();
+    renderMisc();
 
     COORD Map = g_Console.getConsoleSize();
     Map.Y /= 4;
@@ -958,7 +970,7 @@ void renderFramerate()
     ss << g_dElapsedTime << "secs";
     c.X = 0;
     c.Y = 0;
-    g_Console.writeToBuffer(c, ss.str(), 0x59);
+    g_Console.writeToBuffer(c, ss.str(), 0x03);
 }
 
 
