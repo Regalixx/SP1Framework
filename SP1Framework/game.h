@@ -59,6 +59,7 @@ struct SFireChar
 {
     COORD fireLocation;
     int fireHealth;
+    bool advancedFire = false;
 };
 
 struct SBossFireChar
