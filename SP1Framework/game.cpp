@@ -23,8 +23,8 @@ SFireChar* g_sFire[100] = {};
 SBossFireChar* g_sBoss[1] = {};
 int TutorialEnemies = 36;
 int Level1Enemies = 90;
-int Level2Enemies = 10;
-int Level3Enemies = 73;
+int Level2Enemies = 16;
+int Level3Enemies = 46;
 int bossHealthCounter = 50;
 int playerMove = 0;
 bool AllEnemiesCleared = false;
@@ -351,28 +351,28 @@ void moveFire()
             else if (randomizer == 1 && playerMove % 6 == 0 && g_sBoss[0]->bossLocation.X > 30)
                 g_sBoss[0]->bossLocation.X--;
         }
-        if (stagecounter == 2)
+        if (stagecounter == 2 || stagecounter == 3)
         {
             for (int i = 0; i < sizeof(g_sFire) / sizeof(*g_sFire); i++)
             {
-                if (g_sFire[i] != nullptr)
+                if (g_sFire[i] != nullptr && g_sFire[i]->advancedFire)
                 {
                     int chanceToFire = rand() % 3;
-                    if (playerMove % 7 == 0)
+                    if (playerMove % 8 == 0)
                     {
                         if (chanceToFire == 2)
                         {
                             enemyShoot(g_sFire[i]->fireLocation.X, g_sFire[i]->fireLocation.Y);
                         }
                     }
-                    if (randomizer == 0 && playerMove % 5 == 0 && g_sFire[i]->fireLocation.X < 47)
+                    if (randomizer == 0 && playerMove % 10 == 0 && g_sFire[i]->fireLocation.X < 47)
                         g_sFire[i]->fireLocation.X++;
-                    else if (randomizer == 1 && playerMove % 5 == 0 && g_sFire[i]->fireLocation.X > 30)
+                    else if (randomizer == 1 && playerMove % 10 == 0 && g_sFire[i]->fireLocation.X > 30)
                         g_sFire[i]->fireLocation.X--;
                 }
             }
         }
-        if (playerMove % 28 == 0)
+        if (playerMove % 18 == 0)
         {
             if (g_sBoss[0] != nullptr)
             {
@@ -465,7 +465,7 @@ void renderEnemyBullet()
     {
         if (g_enemyBullet[i] != nullptr)
         {
-            g_Console.writeToBuffer(g_enemyBullet[i]->bulletLocation, "Û", 0x0A);
+            g_Console.writeToBuffer(g_enemyBullet[i]->bulletLocation, "Û", 0x0C);
             if (g_enemyBullet[i]->bulletLocation.Y == 23)
             {
                 if (g_enemyBullet[i] != nullptr)
@@ -715,46 +715,28 @@ void spawnFire(int wave)
         }
         break;
     case 2:
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 16; i++)
         {
             if (g_sFire[i] == nullptr)
             {
                 g_sFire[i] = new SFireChar;
-                g_sFire[i]->fireHealth = 2;
-                g_sFire[i]->fireLocation.X = 35 + (i);
-                g_sFire[i]->fireLocation.Y = 9;
-                /*
-                if (i < 18)
+                g_sFire[i]->advancedFire = true;
+                g_sFire[i]->fireHealth = 3;
+                if (i < 10)
                 {
-                    g_sFire[i]->fireLocation.X = 30 + (i);
-                    g_sFire[i]->fireLocation.Y = 11;
-                }
-                else if (i >= 18 && i < 36)
-                {
-                    g_sFire[i]->fireLocation.X = 12 + (i);
-                    g_sFire[i]->fireLocation.Y = 10;
-                }
-                else if (i >= 36 && i < 54)
-                {
-                    g_sFire[i]->fireLocation.X = -6 + (i);
+                    g_sFire[i]->fireLocation.X = 34 + (i);
                     g_sFire[i]->fireLocation.Y = 9;
                 }
-                else if (i >= 54 && i < 72)
+                else if (i >= 10)
                 {
-                    g_sFire[i]->fireLocation.X = -24 + (i);
-                    g_sFire[i]->fireLocation.Y = 8;
+                    g_sFire[i]->fireLocation.X = 26 + (i);
+                    g_sFire[i]->fireLocation.Y = 10;
                 }
-                else
-                {
-                    g_sFire[i]->fireLocation.X = -42 + (i);
-                    g_sFire[i]->fireLocation.Y = 7;
-                }
-                */
             }
         }
         break;
     case 3:
-        for (int i = 0; i < 72; i++)
+        for (int i = 0; i < 45; i++)
         {
             if (g_sFire[i] == nullptr)
             {
@@ -771,17 +753,12 @@ void spawnFire(int wave)
                     g_sFire[i]->fireLocation.X = 12 + (i);
                     g_sFire[i]->fireLocation.Y = 10;
                 }
-                else if (i >= 36 && i < 54)
+                else if (i >= 36 && i < 45)
                 {
-                    g_sFire[i]->fireHealth = 2;
-                    g_sFire[i]->fireLocation.X = -6 + (i);
+                    g_sFire[i]->advancedFire = true;
+                    g_sFire[i]->fireHealth = 3;
+                    g_sFire[i]->fireLocation.X = -1 + (i);
                     g_sFire[i]->fireLocation.Y = 9;
-                }
-                else if (i >= 54 && i < 72)
-                {
-                    g_sFire[i]->fireHealth = 2;
-                    g_sFire[i]->fireLocation.X = -24 + (i);
-                    g_sFire[i]->fireLocation.Y = 8;
                 }
             }
             if (g_sBoss[0] == nullptr)
@@ -1090,7 +1067,7 @@ void renderFire()
     {
         if (g_sFire[i] != nullptr)
         {
-            if (g_sFire[i]->fireHealth == 2)
+            if (g_sFire[i]->fireHealth > 1)
                 g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", 0x0C);
             else
                 g_Console.writeToBuffer(g_sFire[i]->fireLocation, "F", FOREGROUND_RED | FOREGROUND_GREEN);
