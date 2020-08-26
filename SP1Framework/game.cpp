@@ -844,73 +844,74 @@ void renderMisc()
     bs1.Y = 0;
     bs1.X = 5;
 
-    g_Console.writeToBuffer(bs1, "  ____  _            _       _____                                     ", 0x03);
+    g_Console.writeToBuffer(bs1, "  ____  _            _       _____                                     ", 0x0B);
     bs1.Y++;
-    g_Console.writeToBuffer(bs1, " |  _ || |          | |     / ____|                                    ", 0x03);
+    g_Console.writeToBuffer(bs1, " |  _ || |          | |     / ____|                                    ", 0x0B);
     bs1.Y++;
-    g_Console.writeToBuffer(bs1, " | |_) | | __ _  ___| | __ | (___  _   _ _ __ ___  _ __ ___   ___ _ __ ", 0x03);
+    g_Console.writeToBuffer(bs1, " | |_) | | __ _  ___| | __ | (___  _   _ _ __ ___  _ __ ___   ___ _ __ ", 0x0B);
     bs1.Y++;
-    g_Console.writeToBuffer(bs1, " |  _ <| |/ _` |/ __| |/ /  |___ || | | | '_ ` _ || '_ ` _ | / _ | '__|", 0x03);
+    g_Console.writeToBuffer(bs1, " |  _ <| |/ _` |/ __| |/ /  |___ || | | | '_ ` _ || '_ ` _ | / _ | '__|", 0x0B);
     bs1.Y++;
-    g_Console.writeToBuffer(bs1, " | |_) | | (_| | (__|   <   ____) | |_| | | | | | | | | | | |  __/ |   ", 0x03);
+    g_Console.writeToBuffer(bs1, " | |_) | | (_| | (__|   <   ____) | |_| | | | | | | | | | | |  __/ |   ", 0x0B);
     bs1.Y++;
-    g_Console.writeToBuffer(bs1, " |____/|_||__,_||___|_||_| |_____/ |__,_|_| |_| |_|_| |_| |_||___|_|   ", 0x03);
+    g_Console.writeToBuffer(bs1, " |____/|_||__,_||___|_||_| |_____/ |__,_|_| |_| |_|_| |_| |_||___|_|   ", 0x0B);
 
     bs2.Y = 10;
     bs2.X = 0;
 
     for (int i = 0; i <= 79; i++)
     {
-        g_Console.writeToBuffer(bs2, "_", 0x03);
+        g_Console.writeToBuffer(bs2, "_", 0x0B);
         bs2.X++;
     }
 
     bs3.Y = 12;
     bs3.X = 49;
 
-    g_Console.writeToBuffer(bs3, "               ,@@@@@@@,", 0x03);
+    g_Console.writeToBuffer(bs3, "               ,@@@@@@@,", 0x0A);
     bs3.Y++;
-    g_Console.writeToBuffer(bs3, "       ,,,.   ,@@@@@@/@@,  ", 0x03);
+    g_Console.writeToBuffer(bs3, "       ,,,.   ,@@@@@@/@@,  ", 0x0A);
     bs3.Y++;
-    g_Console.writeToBuffer(bs3, "    ,&%%&%&&%,@@@@@/@@@@@@,", 0x03);
+    g_Console.writeToBuffer(bs3, "    ,&%%&%&&%,@@@@@/@@@@@@,", 0x0A);
     bs3.Y++;
-    g_Console.writeToBuffer(bs3, "   ,%&\%&&%&&%,@@@\@@@/@@@", 0x03);
+    g_Console.writeToBuffer(bs3, "   ,%&\%&&%&&%,@@@\@@@/@@@", 0x0A);
     bs3.Y++;
-    g_Console.writeToBuffer(bs3, "   %&&%&%&/%&&%@@\@@/ /@@@", 0x03);
+    g_Console.writeToBuffer(bs3, "   %&&%&%&/%&&%@@|@@/ /@@@", 0x0A);
     bs3.Y++;
-    g_Console.writeToBuffer(bs3, "   %&&%/ %&%%&&@@\ V /@@' ", 0x03);
+    g_Console.writeToBuffer(bs3, "   %&&%/ %&%%&&@@| V /@@' ", 0x0A);
     bs3.Y++;
-    g_Console.writeToBuffer(bs3, "   `&%\ ` /%&'    |.|        '", 0x03);
+    g_Console.writeToBuffer(bs3, "   `&%\ ` /%&'    |.|        '", 0x0A);
     bs3.Y++;
-    g_Console.writeToBuffer(bs3, "       |o|        | |         ", 0x03);
+    g_Console.writeToBuffer(bs3, "       |o|        | |         ", 0x0A);
     bs3.Y++;
-    g_Console.writeToBuffer(bs3, "       |.|        | |         ", 0x03);
+    g_Console.writeToBuffer(bs3, "       |.|        | |         ", 0x0A);
     bs3.Y++;
-    g_Console.writeToBuffer(bs3, "    \\/ ._\//_/__/  ,\_//__\\", 0x03);
+    g_Console.writeToBuffer(bs3, "    |\/ ._|//_/__/  ,\_//__\|", 0x0A);
 
     bs4.Y = 12;
-    bs4.X = 0;
+    bs4.X = 3;
 
-    g_Console.writeToBuffer(bs4, "               ,@@@@@@@,", 0x03);
+    g_Console.writeToBuffer(bs4, "  ,@@@@@@@,", 0x0A);
     bs4.Y++;
-    g_Console.writeToBuffer(bs4, "       ,,,.   ,@@@@@@/@@,  ", 0x03);
+    g_Console.writeToBuffer(bs4, " ,@@@@@@/@@,  .oo8888o.", 0x0A);
     bs4.Y++;
-    g_Console.writeToBuffer(bs4, "    ,&%%&%&&%,@@@@@/@@@@@@,", 0x03);
+    g_Console.writeToBuffer(bs4, ",@@@@@/@@@@@@,8888\88/8o", 0x0A);
     bs4.Y++;
-    g_Console.writeToBuffer(bs4, "   ,%&\%&&%&&%,@@@\@@@/@@@", 0x03);
+    g_Console.writeToBuffer(bs4, ",@@@|@@@/@@@88|88888/88'", 0x0A);
     bs4.Y++;
-    g_Console.writeToBuffer(bs4, "   %&&%&%&/%&&%@@\@@/ /@@@", 0x03);
+    g_Console.writeToBuffer(bs4, " @@\@@/ /@@@88888\88888'", 0x0A);
     bs4.Y++;
-    g_Console.writeToBuffer(bs4, "   %&&%/ %&%%&&@@\ V /@@' ", 0x03);
+    g_Console.writeToBuffer(bs4, " @@\ V /@@' `88\8 `/88'", 0x0A);
     bs4.Y++;
-    g_Console.writeToBuffer(bs4, "   `&%\ ` /%&'    |.|        '", 0x03);
+    g_Console.writeToBuffer(bs4, "    |.|         \ '|8''", 0x0A);
     bs4.Y++;
-    g_Console.writeToBuffer(bs4, "       |o|        | |         ", 0x03);
+    g_Console.writeToBuffer(bs4, "    | |         | |", 0x0A);
     bs4.Y++;
-    g_Console.writeToBuffer(bs4, "       |.|        | |         ", 0x03);
+    g_Console.writeToBuffer(bs4, "    | |         | | ", 0x0A);
     bs4.Y++;
-    g_Console.writeToBuffer(bs4, "    \\/ ._\//_/__/  ,\_//__\\", 0x03);
+    g_Console.writeToBuffer(bs4, " __/  ,\_//__\\/.  \_//__/_", 0x0A);
 }
+
 
 void renderSplashScreen()  // renders the splash screen
 {
@@ -995,7 +996,6 @@ void renderMap()
         0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F,
         0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6
     };
-
     COORD c;
     for (int i = 0; i < 12; ++i)
     {
