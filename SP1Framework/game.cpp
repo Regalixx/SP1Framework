@@ -491,7 +491,7 @@ void shootBullet()
         {
             g_bullet[i] = new SBulletChar;
             g_bullet[i]->bulletLocation.X = g_sChar.m_cLocation.X;
-            g_bullet[i]->bulletLocation.Y = 22;
+            g_bullet[i]->bulletLocation.Y = 24;
             break;
         }
     }
@@ -948,6 +948,21 @@ void renderSplashScreenGameOver()
     clearScreen();
     gameOver = true;
     COORD c = g_Console.getConsoleSize();
+    COORD v = g_Console.getConsoleSize();
+    v.Y = 0;
+    v.X = 12;
+    g_Console.writeToBuffer(v, " _____                           _____                    ", 0x03);
+    v.Y++;
+    g_Console.writeToBuffer(v, "|  __ |                         |  _  |                   ", 0x03);
+    v.Y++;
+    g_Console.writeToBuffer(v, "| |  |/  __ _  _ __ ___    ___  | | | |__   __  ___  _ __ ", 0x03);
+    v.Y++;
+    g_Console.writeToBuffer(v, "| | __  / _` || '_ ` _ |  / _ | | | | || | / / / _ || '__|", 0x03);
+    v.Y++;
+    g_Console.writeToBuffer(v, "| |_| || (_| || | | | | ||  __/ | |_/ / | V / |  __/| |   ", 0x03);
+    v.Y++;
+    g_Console.writeToBuffer(v, " |____/ |__,_||_| |_| |_| |___|  |___/   |_/   |___||_|   ", 0x03);
+
     c.Y /= 3;
     c.X = c.X / 2 - 5;
     g_Console.writeToBuffer(c, "GAME OVER YOU LOST!", 0x03);
@@ -961,6 +976,21 @@ void renderSplashScreenVictory()
     clearScreen();
     gameOver = true;
     COORD c = g_Console.getConsoleSize();
+    COORD v = g_Console.getConsoleSize();
+    v.Y = 0;
+    v.X = 20;
+    g_Console.writeToBuffer(v, "__   __                _    _  _         _ ", 0x03);
+    v.Y++;
+    g_Console.writeToBuffer(v, "| | / /               | |  | |(_)       | |", 0x03);
+    v.Y++;
+    g_Console.writeToBuffer(v, " | V /   ___   _   _  | |  | | _  _ __  | |", 0x03);
+    v.Y++;
+    g_Console.writeToBuffer(v, "  | /   / _ | | | | | | |/|| || || '_ | | |", 0x03);
+    v.Y++;
+    g_Console.writeToBuffer(v, "  | |  | (_) || |_| | |  /|  /| || | | ||_|", 0x03);
+    v.Y++;
+    g_Console.writeToBuffer(v, "  |_/   |___/  |__,_|  |/  |/ |_||_| |_|(_)", 0x03);
+
     c.Y /= 3;
     c.X = c.X / 2 - 5;
     g_Console.writeToBuffer(c, "GAME OVER YOU WIN!", 0x03);
