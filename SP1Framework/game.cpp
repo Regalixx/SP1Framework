@@ -30,12 +30,13 @@ int playerMove = 0;
 bool AllEnemiesCleared = false;
 bool fireMove = false;
 bool enemyBulletMove = false;
+bool gameOver = false;
 int LivesLeft = 5;
 int stagecounter = 0;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
 
 // Console object
-Console g_Console(80, 25, "testest");//setconsolesize
+Console g_Console(80, 25, "Black Summer");//setconsolesize
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -242,7 +243,6 @@ void update(double dt)
         g_eGameState = S_LEVEL1;
         if (AllEnemiesCleared == true)
         {
-
             resetPlayer();
             spawnFire(1);
             AllEnemiesCleared = false;
@@ -255,7 +255,6 @@ void update(double dt)
         g_eGameState = S_LEVEL2;
         if (AllEnemiesCleared == true)
         {
-
             resetPlayer();
             spawnFire(2);
             AllEnemiesCleared = false;
@@ -303,11 +302,13 @@ void splashScreenWait()    // waits for time to pass in splash screen
 
 void updateGame()       // gameplay logic
 {
-
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
-    moveCharacter();    // moves the character, collision detection, physics, etc
-    moveFire();         // moves the enemies
-                        // sound can be played here too.
+    if (!gameOver)
+    {
+        moveCharacter();    // moves the character, collision detection, physics, etc
+        moveFire();         // moves the enemies
+                            // sound can be played here too.
+    }
 }
 
 void moveCharacter()
@@ -451,7 +452,6 @@ void moveFire()
                         clearScreen();
                         renderSplashScreenVictory();
                         break;
-
                     }
                 }
             }
@@ -946,6 +946,7 @@ void renderSplashScreen()  // renders the splash screen
 void renderSplashScreenGameOver()
 {
     clearScreen();
+    gameOver = true;
     COORD c = g_Console.getConsoleSize();
     c.Y /= 3;
     c.X = c.X / 2 - 5;
@@ -958,6 +959,7 @@ void renderSplashScreenGameOver()
 void renderSplashScreenVictory()
 {
     clearScreen();
+    gameOver = true;
     COORD c = g_Console.getConsoleSize();
     c.Y /= 3;
     c.X = c.X / 2 - 5;
