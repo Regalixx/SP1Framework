@@ -947,7 +947,7 @@ void renderSplashScreen()  // renders the splash screen
     }
     c.Y += 1;
     c.X = g_Console.getConsoleSize().X / 2 - 25;
-    g_Console.writeToBuffer(c, "Press <Space> to fire and change character colour", 0x09);
+    g_Console.writeToBuffer(c, "Press <Space> to fire,A to move left,D to move right", 0x09);
     c.Y += 1;
     c.X = g_Console.getConsoleSize().X / 2 - 9;
     g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
