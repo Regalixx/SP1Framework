@@ -315,21 +315,31 @@ void moveCharacter()
 {
     // Updating the location of the character based on the key release
     // providing a beep sound whenver we shift the character
-    if (g_skKeyEvent[K_LEFT].keyReleased && g_sChar.m_cLocation.X > 30)
+    if (g_skKeyEvent[K_LEFT].keyReleased && g_sChar.m_cLocation.X >= 30)
     {
         Beep(1440, 30);
-        g_sChar.m_cLocation.X--;
-        playerMove++;
-        fireMove = TRUE;
-        enemyBulletMove = TRUE;
+        if (g_sChar.m_cLocation.X > 30) {
+            g_sChar.m_cLocation.X--;
+            playerMove++;
+            fireMove = TRUE;
+            enemyBulletMove = TRUE;
+        }
+        else if (g_sChar.m_cLocation.X == 30) {
+            Beep(1109, 30);
+        }
     }
-    if (g_skKeyEvent[K_RIGHT].keyReleased && g_sChar.m_cLocation.X < 47)
+    if (g_skKeyEvent[K_RIGHT].keyReleased && g_sChar.m_cLocation.X <= 47)
     {
         Beep(1440, 30);
-        g_sChar.m_cLocation.X++;
-        playerMove++;
-        fireMove = TRUE;
-        enemyBulletMove = TRUE;
+        if (g_sChar.m_cLocation.X < 47) {
+            g_sChar.m_cLocation.X++;
+            playerMove++;
+            fireMove = TRUE;
+            enemyBulletMove = TRUE;
+        }
+        else if (g_sChar.m_cLocation.X == 47) {
+            Beep(1109, 30);
+        }
     }
     if (g_skKeyEvent[K_SPACE].keyReleased)
     {
